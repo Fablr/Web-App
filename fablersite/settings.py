@@ -39,6 +39,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_chaos',
+    'oauth2_provider',
+    'social.apps.django_app.default',
+    'rest_framework_social_oauth2',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -65,6 +68,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -78,11 +83,31 @@ WSGI_APPLICATION = 'fablersite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'fabler',
+        'USER': 'fabler@weopxlv27f',
+        'PASSWORD': '030821ae!',
+        'OPTIONS': {
+            'host_is_server': True,
+            'dsn': 'fabler'  # as in odbc.ini
+        },
     }
 }
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        #'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        #'rest_framework_social_oauth2.authentication.SocialAuthentication',
+    ]
+}
+
+#AUTHENTICATION_BACKENDS = (
+#   'rest_framework_social_oauth2.backends.DjangoOAuth2',
+#   'django.contrib.auth.backends.ModelBackend',
+#)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
