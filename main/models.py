@@ -1,22 +1,29 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, User
 from django.db.models.signals import post_save
-from main.utils import *
 
-class Listener(models.Model):
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+
+
+#Custom User profile
+#class 
+
+
+
+
+
+class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    post_save.connect(create_auth_client, sender=User)
 
-#--AuthenticationID <string>: PK
-#--First Name <string>
-#--Last Name <string>
-#--Email <string>: PK
-#--UserDisplayName <string>: PK
-#--UserID <int>: PK
-#--SuspensionCount<int>
-#--ModeratedCommentDeletionsTotal<int>
-#--ReportedCommentsTotal<int>
-#--SuspensionDate <date>
-#--IsVerified <bool>
-#--ExplicitOK<bool>
+    birthday = models.DateField(blank=True, null=True)
+    city = models.CharField(max_length=60, blank=True)
+    state_province = models.CharField(max_length=30, blank=True)   
+
+def create_user_profile(sender, instance, created, **kwargs):  
+    if created:  
+       profile, created = UserProfile.objects.get_or_create(user=instance)  
+
+post_save.connect(create_user_profile, sender=User, weak=False) 
 

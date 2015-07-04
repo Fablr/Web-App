@@ -63,4 +63,11 @@ urlpatterns = patterns('',
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^admin/', include(admin.site.urls)),
+    #(r'^', include('registration.backends.default.urls')),
+
+    #in-house apps
+    url(r'^registration/', include('registration.urls', namespace="registration")),
+    #url('^', include('django.contrib.auth.urls'))
+    #url(r'^login/', include('login.urls', namespace="login")),
+    #url(r'', include(splash.urls)),
 )

@@ -16,16 +16,11 @@ Including another URLconf
 from django.conf.urls import url, patterns, include
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
-from . import views
-admin.autodiscover()
 
 from rest_framework import permissions, routers, serializers, viewsets
-
-from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 
 # Additionally, we include login URLs for the browseable API.
 urlpatterns = patterns('',
-    url(r'^sign_up/$', views.SignUp.as_view(), name="sign_up"),
-    url(r'^login/$', views.Login.as_view(), name="login"),
+
 )

@@ -1,0 +1,32 @@
+<!doctype html>
+{% load staticfiles %}
+<html lang="en">
+	
+	<link rel="stylesheet" type="text/css" href="{% static 'registration/style.css' %}" />
+
+	<head>
+        <title>Fabler</title>
+    </head>
+
+    <body>
+        <h1>Register with Fabler</h1>
+
+        Aesop says: <strong>register here!</strong><br />
+
+        <form id="form" method="post" action="/registration/"
+                enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <!-- Display each form element in a paragraph -->
+            <div id="totheleft">
+				{{ form.as_p }}
+			</div>
+
+            <!-- Provide a button to click to submit the form. -->
+			<div id="center">
+				<input type="submit" name="submit" value="Register" />
+			</div>
+        </form>
+    </body>
+</html>
