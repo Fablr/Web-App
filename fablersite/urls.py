@@ -16,45 +16,22 @@ Including another URLconf
 from django.conf.urls import url, patterns, include
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
+from django.views.generic import TemplateView
 admin.autodiscover()
 
 from rest_framework import permissions, routers, serializers, viewsets
 
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
+from authentication.views import *
 
-# first we define the serializers
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-
-
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class GroupViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
-    permission_classes = [permissions.IsAuthenticated]
-    required_scopes = ['groups']
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
 
 
 # Routers provide an easy way of automatically determining the URL conf
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
-
+router.register(r'userprofile', UserProfileViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.
@@ -66,8 +43,10 @@ urlpatterns = patterns('',
     #(r'^', include('registration.backends.default.urls')),
 
     #in-house apps
-    url(r'^registration/', include('registration.urls', namespace="registration")),
-    #url('^', include('django.contrib.auth.urls'))
+    url(r'^registration/', include('authentication.urls', namespace="registration")),
+    url(r'^status/', TemplateView.as_view(template_name='status.html')),
+    
+    url('^', include('django.contrib.auth.urls', namespace="accounts")), 
     #url(r'^login/', include('login.urls', namespace="login")),
     #url(r'', include(splash.urls)),
 )

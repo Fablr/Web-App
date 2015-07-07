@@ -1,0 +1,14 @@
+<!doctype html>
+{% load staticfiles %}
+<html lang="en">
+	<head>
+		<title>Status</title>
+	</head>
+
+	<body>
+		<h1>Currently logged in</h1>
+		Username: {{request.user.username}} </br>
+		Email: {{request.user.email}} </br>
+		Password: {{request.user.password}} </br>
+	</body>
+</html>

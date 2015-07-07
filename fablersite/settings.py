@@ -47,8 +47,7 @@ INSTALLED_APPS = (
     
     #in-house apps
     #'splash',
-    'main',
-    'registration',
+    'authentication',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -81,7 +80,7 @@ ROOT_URLCONF = 'fablersite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,6 +92,17 @@ TEMPLATES = [
         },
     },
 ]
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+  'django.core.context_processors.request',
+  'django.contrib.auth.context_processors.auth',
+  'django.template.context_processors.debug',
+  'django.template.context_processors.i18n',
+  'django.template.context_processors.media',
+  'django.template.context_processors.static',
+  'django.template.context_processors.tz',
+  'django.contrib.messages.context_processors.messages'
+)
 
 WSGI_APPLICATION = 'fablersite.wsgi.application'
 
