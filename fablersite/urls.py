@@ -24,6 +24,7 @@ from rest_framework import permissions, routers, serializers, viewsets
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 from authentication.views import *
+from podcast.views import *
 
 
 
@@ -32,6 +33,9 @@ router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
 router.register(r'userprofile', UserProfileViewSet)
+router.register(r'podcast', PodcastViewSet)
+router.register(r'episode', EpisodeViewSet)
+router.register(r'publisher', PublisherViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.

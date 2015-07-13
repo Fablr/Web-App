@@ -1,17 +1,8 @@
 from django.db import models
 
 # Create your models here.
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, User
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_delete
-
-
-from django.conf import settings
-from django.contrib.auth import get_user_model
-
-
-#Custom User profile
-#class 
-
 
 
 class UserProfile(models.Model):

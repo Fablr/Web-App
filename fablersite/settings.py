@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #outside apps
-    #'oauth2_provider',
+    'oauth2_provider',
     'rest_framework',
     #'drf_chaos',
     #'sslserver',
@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     #in-house apps
     #'splash',
     'authentication',
+    'podcast',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -158,6 +159,11 @@ REST_FRAMEWORK = {
         #'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework.permissions.IsAdminUser',
         #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',
     ]
 }
 

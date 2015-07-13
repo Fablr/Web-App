@@ -1,9 +1,10 @@
 awsebcli==3.4.5
+beautifulsoup4==4.4.0
 cement==2.4.0
 cffi==1.1.2
 cryptography==0.9.1
 defusedxml==0.4.1
-Django==1.8.2
+Django==1.8.3
 django-appconf==1.0.1
 django-braces==1.8.0
 django-dual-authentication==1.0.0
