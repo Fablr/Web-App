@@ -8,6 +8,7 @@ from rest_framework import generics, viewsets, permissions
 from authentication.models import UserProfile
 from authentication.forms import UserCreateForm
 from authentication.serializers import *
+from authentication.permissions import IsStaffOrTargetUser
 
 class RegistrationView(CreateView):
     '''
@@ -29,10 +30,13 @@ class RegistrationView(CreateView):
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
-    permission_classes = [permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get_permissions(self):
+        # allow non-authenticated user to create via POST
+        return (permissions.AllowAny() if self.request.method == 'POST'
+                else IsStaffOrTargetUser()),
 
 class GroupViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
@@ -43,9 +47,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
-    permission_classes = [permissions.IsAuthenticated]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+
 
 
 #from permissions import IsAuthenticatedOrCreate

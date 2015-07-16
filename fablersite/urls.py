@@ -13,7 +13,7 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import url, patterns, include
+import django.conf.urls
 from django.contrib.auth.models import User, Group
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -39,18 +39,19 @@ router.register(r'publisher', PublisherViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.
-urlpatterns = patterns('',
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^admin/', include(admin.site.urls)),
+urlpatterns = django.conf.urls.patterns('',
+    django.conf.urls.url(r'^', django.conf.urls.include(router.urls)),
+    django.conf.urls.url(r'^api-auth/', django.conf.urls.include('rest_framework.urls', namespace='rest_framework')),
+    django.conf.urls.url(r'^o/', django.conf.urls.include('oauth2_provider.urls', namespace='oauth2_provider')),
+    django.conf.urls.url(r'^admin/', django.conf.urls.include(admin.site.urls)),
+    django.conf.urls.url(r'^podcasts/', django.conf.urls.include('podcast.urls', namespace="podcasts")),
     #(r'^', include('registration.backends.default.urls')),
 
     #in-house apps
-    url(r'^registration/', include('authentication.urls', namespace="registration")),
-    url(r'^status/', TemplateView.as_view(template_name='status.html')),
+    django.conf.urls.url(r'^registration/', django.conf.urls.include('authentication.urls', namespace="registration")),
+    django.conf.urls.url(r'^status/', TemplateView.as_view(template_name='status.html')),
     
-    url('^', include('django.contrib.auth.urls', namespace="accounts")), 
+    django.conf.urls.url('^', django.conf.urls.include('django.contrib.auth.urls', namespace="accounts")),
     #url(r'^login/', include('login.urls', namespace="login")),
     #url(r'', include(splash.urls)),
 )

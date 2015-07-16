@@ -1,0 +1,7 @@
+<h1>{{ publisher.name }}</h1>
+
+<ul>
+{% for podcast in podcast_list %}
+    <li>{{ podcast.title }}</li>
+{% endfor %}
+</ul>

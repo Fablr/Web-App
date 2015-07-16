@@ -41,12 +41,12 @@ INSTALLED_APPS = (
     #outside apps
     'oauth2_provider',
     'rest_framework',
-    #'drf_chaos',
-    #'sslserver',
+    # 'drf_chaos',
+    # 'sslserver',
 
     
-    #in-house apps
-    #'splash',
+    # in-house apps
+    # 'splash',
     'authentication',
     'podcast',
 )
@@ -115,7 +115,7 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId',
     'django-dual-authentication.backends.DualAuthentication',
-    #'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
 )
 
 # Database
