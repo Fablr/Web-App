@@ -9,13 +9,14 @@ class PublisherSerializer(serializers.ModelSerializer):
         model = Publisher
 
 class PodcastSerializer(serializers.ModelSerializer):
-    publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail') 
-    episode = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='episode-detail')
+    #publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')
+    #episode = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='episode-detail')
     class Meta:
         model = Podcast
 
+
 class EpisodeSerializer(serializers.ModelSerializer):
-    podcast = serializers.HyperlinkedRelatedField(read_only=True, view_name='podcast-detail') 
-    publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')     
+    #podcast = serializers.HyperlinkedRelatedField(read_only=True, view_name='podcast-detail')
+    #publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')
     class Meta:
         model = Episode
