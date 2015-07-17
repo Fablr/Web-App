@@ -10,7 +10,7 @@ class PublisherSerializer(serializers.ModelSerializer):
 
 class PodcastSerializer(serializers.ModelSerializer):
     #publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')
-    #episode = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='episode-detail')
+    episode = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='episode-detail')
     class Meta:
         model = Podcast
 
