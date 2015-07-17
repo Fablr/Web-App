@@ -6,7 +6,7 @@ class Publisher(models.Model):
     """
     Model for each Publisher of Podcasts
     """
-    email = models.EmailField()
+    email = models.EmailField(blank=True)
     name = models.CharField(max_length=255, blank=True, unique=True)
     users = models.ManyToManyField(User, blank=True)
     def __str__(self):
