@@ -7,6 +7,7 @@ from django.views import generic
 from podcast.models import Podcast, Publisher, Episode
 from podcast.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
+import django_filters
 
 class PublisherDetailView(generic.DetailView):
     model = Publisher
@@ -23,6 +24,17 @@ class PodcastDetailView(generic.DetailView):
         return context
 
 
+class PublisherFilter(django_filters.FilterSet):
+    class Meta:
+        model = Publisher
+
+class PodcastFilter(django_filters.FilterSet):
+    class Meta:
+        model = Podcast
+
+class EpisodeFilter(django_filters.FilterSet):
+    class Meta:
+        model = Episode
 
 # Django Rest API
 # ViewSets define the view behavior.
@@ -30,6 +42,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated]
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
+    filter_class = PodcastFilter
     def get_permissions(self):
         # allow non-authenticated user to create via POST
         return (permissions.AllowAny() if self.request.method == 'POST'
@@ -47,6 +60,7 @@ class PublisherViewSet(viewsets.ModelViewSet):
 
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
+    filter_class = PublisherFilter
 
 class EpisodeViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
@@ -59,4 +73,5 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 
     queryset = Episode.objects.all()
     serializer_class = EpisodeSerializer
+    filter_class = EpisodeFilter
 

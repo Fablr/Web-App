@@ -10,6 +10,8 @@ from authentication.forms import UserCreateForm
 from authentication.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 
+import django_filters
+
 class RegistrationView(CreateView):
     '''
     Outputs RegistrationForm onto registration.html
@@ -26,6 +28,10 @@ class RegistrationView(CreateView):
 
 
 
+class UserFilter(django_filters.FilterSet):
+    class Meta:
+        model = User
+
 # Django Rest API
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
@@ -33,6 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    filter_class = UserFilter
 
     def get_permissions(self):
         # allow non-authenticated user to create via POST
