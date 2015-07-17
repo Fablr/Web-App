@@ -30,6 +30,7 @@ class RegistrationView(CreateView):
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
