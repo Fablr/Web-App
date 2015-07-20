@@ -1,6 +1,6 @@
 from rest_framework import permissions
  
- 
+permissions.IsAuthenticated
 class IsStaffOrTargetUser(permissions.BasePermission):
     def has_permission(self, request, view):
         # allow user to list all users if logged in user is staff
