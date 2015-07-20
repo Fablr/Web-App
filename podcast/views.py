@@ -39,38 +39,17 @@ class EpisodeFilter(django_filters.FilterSet):
 # Django Rest API
 # ViewSets define the view behavior.
 class PodcastViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated]
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
     filter_class = PodcastFilter
-    def get_permissions(self):
-        # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST' or 'GET'
-                else IsStaffOrTargetUser()),
 
 
 class PublisherViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated]
-    #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
-    #required_scopes = ['groups']
-    def get_permissions(self):
-        # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST' or 'GET'
-                else IsStaffOrTargetUser()),
-
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
     filter_class = PublisherFilter
 
 class EpisodeViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
-    #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
-    def get_permissions(self):
-        # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST' or 'GET'
-                else IsStaffOrTargetUser()),
-
-
     queryset = Episode.objects.all()
     serializer_class = EpisodeSerializer
     filter_class = EpisodeFilter
