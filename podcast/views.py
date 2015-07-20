@@ -45,7 +45,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
     filter_class = PodcastFilter
     def get_permissions(self):
         # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST'
+        return (permissions.AllowAny() if self.request.method == 'POST' or 'GET'
                 else IsStaffOrTargetUser()),
 
 
@@ -55,7 +55,7 @@ class PublisherViewSet(viewsets.ModelViewSet):
     #required_scopes = ['groups']
     def get_permissions(self):
         # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST'
+        return (permissions.AllowAny() if self.request.method == 'POST' or 'GET'
                 else IsStaffOrTargetUser()),
 
     queryset = Publisher.objects.all()
