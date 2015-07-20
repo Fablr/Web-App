@@ -67,7 +67,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     def get_permissions(self):
         # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST'
+        return (permissions.AllowAny() if self.request.method == 'POST' or 'GET'
                 else IsStaffOrTargetUser()),
 
 
