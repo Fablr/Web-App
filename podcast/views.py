@@ -23,6 +23,8 @@ class PodcastDetailView(generic.DetailView):
         context['episode_list'] = Episode.objects.filter(podcast=self.kwargs['pk'])
         return context
 
+class EpisodeDetailView(generic.DetailView):
+    model = Episode
 
 class PublisherFilter(django_filters.FilterSet):
     class Meta:

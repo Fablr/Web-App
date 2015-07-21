@@ -44,7 +44,7 @@ urlpatterns = django.conf.urls.patterns('',
     django.conf.urls.url(r'^api-auth/', django.conf.urls.include('rest_framework.urls', namespace='rest_framework')),
     django.conf.urls.url(r'^o/', django.conf.urls.include('oauth2_provider.urls', namespace='oauth2_provider')),
     django.conf.urls.url(r'^admin/', django.conf.urls.include(admin.site.urls)),
-    django.conf.urls.url(r'^podcasts/', django.conf.urls.include('podcast.urls', namespace="podcasts")),
+    django.conf.urls.url(r'^', django.conf.urls.include('podcast.urls', namespace="podcasts")),
     #(r'^', include('registration.backends.default.urls')),
 
     #in-house apps
