@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from durationfield.db.models.fields.duration import DurationField
 
 
 class Publisher(models.Model):
@@ -47,7 +48,7 @@ class Episode(models.Model):
     description = models.TextField(max_length=4000, blank=True)
     blocked = models.BooleanField(default=False)
     pubdate = models.DateTimeField(null=True)
-    duration = models.CharField(max_length=255, blank=True)
+    duration = models.DurationField(blank=True)
     keywords = models.CharField(max_length=100, blank=True)
     # guid = URLField(max_length=255, unique=True)
     explicit = models.CharField(max_length=255, blank=True)

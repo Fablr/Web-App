@@ -8,6 +8,7 @@ Django==1.8.3
 django-appconf==1.0.1
 django-braces==1.8.0
 django-dual-authentication==1.0.0
+django-durationfield==0.5.2
 django-filter==0.10.0
 django-filters==0.2.1
 django-lazysignup==1.0.1
