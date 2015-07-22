@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     #outside apps
     'oauth2_provider',
     'rest_framework',
+    'django_hosts',
     # 'drf_chaos',
     # 'sslserver',
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django_hosts.middleware.HostsRequestMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,9 +62,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django_hosts.middleware.HostsResponseMiddleware',
 )
 
 ROOT_URLCONF = 'fablersite.urls'
+ROOT_HOSTCONF = 'fablersite.hosts'
+DEFAULT_HOST = 'www'
 
 #Registration Settings
 #REGISTRATION_OPEN = True                # If True, users can register
@@ -153,6 +158,9 @@ else:
    }
 
 REST_FRAMEWORK = {
+    'PAGINATE_BY': 20,
+    'MAX_PAGINATE_BY': 20,
+
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
@@ -193,8 +201,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, "www", "static")
-STATIC_URL = '/static/'
+if 'RDS_DB_NAME' in os.environ:
+    STATIC_ROOT = os.path.join(BASE_DIR, "www", "static")
+    STATIC_URL = '/static/'
+else:
+    STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     #os.path.join(BASE_DIR, "static"),

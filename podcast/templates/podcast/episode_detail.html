@@ -1,7 +1,25 @@
-<h1>{{ episode.title }}</h1>
+<!DOCTYPE html>
+<html lang="en">
 
-<audio controls="controls">
-  <source src="track.ogg" type="audio/ogg" />
-  <source src="{{ episode.link }}" type="audio/mpeg" />
-Your browser does not support the audio element.
-</audio>
+{% load staticfiles %}
+
+<head>
+	<meta charset="UTF-8">
+	<title>Episode {{ episode.title }}</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="{% static 'podcast/episode.css' %}" type="text/css" media="screen"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="{% static 'podcast/player.js' %}" type="text/javascript"></script>
+</head>
+
+<body>
+	<h1>{{ episode.title }}</h1>
+
+	<audio controls="controls">
+		<source src="track.ogg" type="audio/ogg" />
+		<source src="{{ episode.link }}" type="audio/mpeg" />
+		Your browser does not support the audio element.
+	</audio>
+</body>
+</html>
