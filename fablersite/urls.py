@@ -25,9 +25,9 @@ urlpatterns = patterns('',
 
     #in-house apps
     url(r'^registration/', include('authentication.urls', namespace="registration")),
-    url(r'^', TemplateView.as_view(template_name='status.html')),
+    url(r'^$', TemplateView.as_view(template_name='status.html')),
     
-    #url('^', include('django.contrib.auth.urls', namespace="accounts")),
+    url('^accounts/', include('django.contrib.auth.urls', namespace="accounts")),
     #url(r'^login/', include('login.urls', namespace="login")),
     #url(r'', include(splash.urls)),
 )

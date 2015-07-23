@@ -25,7 +25,7 @@ SECRET_KEY = 'bupx2z9jl#x*w$ywj*zxwi!@l2h-c5%h3i-km0)oc9z$dpe9ak'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['api.localhost:8000']
 
 #AUTH_USER_MODEL = 'main.Listener'
 
@@ -69,14 +69,13 @@ ROOT_URLCONF = 'fablersite.urls'
 ROOT_HOSTCONF = 'fablersite.hosts'
 DEFAULT_HOST = 'www'
 
-#Registration Settings
-#REGISTRATION_OPEN = True                # If True, users can register
-#ACCOUNT_ACTIVATION_DAYS = 7     # One-week activation window; you may, of course, use a different value.
-#REGISTRATION_AUTO_LOGIN = True  # If True, the user will be automatically logged in.
-#LOGIN_REDIRECT_URL = '/accounts/'  # The page you want users to arrive at after they successful log in
-#LOGIN_URL = '/accounts/login/'  # The page users are directed to if they are not logged in,
-                                                                # and are trying to access pages requiring authentication
-#TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
+# If running on Amazon session cookies should be on fablersite-dev, otherwise run local test.com. Note to user, make sure your /etc/hosts has a mapping from test.com to 127.0.0.1; when calling this url, make sure you use test.com:8000
+if 'RDS_DB_NAME' in os.environ:
+    SESSION_COOKIE_DOMAIN = '.fablersite-dev.elasticbeanstalk.com'
+else:
+    SESSION_COOKIE_DOMAIN = '.test.com'
+    
+CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
 
 #Security settings
 #CSRF_COOKIE_SECURE = True
