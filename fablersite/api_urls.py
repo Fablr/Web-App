@@ -23,4 +23,7 @@ urlpatterns = patterns('',
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^(?P<backend>[^/]+)/$',
+        register_by_access_token),
+    url('', include('social.apps.django_app.urls', namespace='social')),
 )

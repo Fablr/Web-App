@@ -38,10 +38,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social.apps.django_app.default',
     #outside apps
     'oauth2_provider',
     'rest_framework',
     'django_hosts',
+    'corsheaders',
     # 'drf_chaos',
     # 'sslserver',
 
@@ -55,6 +57,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django_hosts.middleware.HostsRequestMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -72,10 +75,17 @@ DEFAULT_HOST = 'www'
 # If running on Amazon session cookies should be on fablersite-dev, otherwise run local test.com. Note to user, make sure your /etc/hosts has a mapping from test.com to 127.0.0.1; when calling this url, make sure you use test.com:8000
 if 'RDS_DB_NAME' in os.environ:
     SESSION_COOKIE_DOMAIN = '.fablersite-dev.elasticbeanstalk.com'
+    CORS_ORIGIN_WHITELIST = (
+        'fablersite-dev.elasticbeanstalk.com',
+    )   
 else:
     SESSION_COOKIE_DOMAIN = '.test.com'
+    CORS_ORIGIN_WHITELIST = (
+        'test.com:8000',
+    )
     
 CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
+CORS_ALLOW_CREDENTIALS = True
 
 #Security settings
 #CSRF_COOKIE_SECURE = True
@@ -106,21 +116,28 @@ TEMPLATE_CONTEXT_PROCESSORS = (
   'django.template.context_processors.media',
   'django.template.context_processors.static',
   'django.template.context_processors.tz',
-  'django.contrib.messages.context_processors.messages'
+  'django.contrib.messages.context_processors.messages',
+  'social.apps.django_app.context_processors.backends',
+  'social.apps.django_app.context_processors.login_redirect',
 )
+
+FACEBOOK_SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+RAISE_EXCEPTIONS = True
+DEBUG = True
 
 WSGI_APPLICATION = 'fablersite.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.open_id.OpenIdAuth',
-    'social.backends.google.GoogleOpenId',
-    'social.backends.google.GoogleOAuth2',
-    'social.backends.google.GoogleOAuth',
+    'social.backends.facebook.FacebookOAuth2',
     'social.backends.twitter.TwitterOAuth',
-    'social.backends.yahoo.YahooOpenId',
     'django-dual-authentication.backends.DualAuthentication',
     # 'django.contrib.auth.backends.ModelBackend',
 )
+
+SOCIAL_AUTH_FACEBOOK_KEY = '1486683744954921'
+SOCIAL_AUTH_FACEBOOK_SECRET = '68ae6171f0bf859958e81705279073cc'
+LOGIN_REDIRECT_URL = '/'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
