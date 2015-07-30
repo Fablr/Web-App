@@ -1,5 +1,8 @@
-h1 {
-	color: blue;
+.content {
+	background-color: #3a3a3a;
+	color: white;
 }
 
-
+.content h1 {
+	color: white;
+}

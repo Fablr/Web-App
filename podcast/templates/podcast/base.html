@@ -1,7 +1,28 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	{% block title %}<title>Fabler</title>{% endblock %}
+	<link rel="stylesheet" href="{% static 'podcast/style.css' %}" type="text/css" media="screen"/>
+	{% block scripts %}{% endblock %}
+</head>
 
+<body>
+	<div class="wrapper">
+		<div class="content">
+			{% block content %}
 
+			{% endblock %}
+		</div>
+		<div class="push"></div>
+	</div>
+	<footer>
+		<p>
+			Copyright &copy; Sweet Tea Corp - 2015
+		</p>
+	</footer>
 
+</body>
 
 </html>

@@ -1,4 +1,6 @@
-$(document).ready(function(){
+jQuery(document).ready(function(){
+	
+		
 	$('h1').click(function(){
 		$.ajax({
 			type: 'GET',
@@ -12,9 +14,6 @@ $(document).ready(function(){
 		});
 	});
 	
-	$("#play").click(function(){
-		$(this).toggleClass('glyphicon-pause').toggleClass('glyphicon-play'); 
-	});
 });
 
 //$(document).on('click',"#play",function(){

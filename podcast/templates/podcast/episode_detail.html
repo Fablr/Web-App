@@ -1,26 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-
+{% extends "podcast/base.html" %}
 {% load staticfiles %}
 
-<head>
-	<meta charset="UTF-8">
+
+{% block title %}	
 	<title>Episode {{ episode.title }}</title>
+{% endblock %}
+
+{% block scripts %}
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 	<link rel="stylesheet" href="{% static 'podcast/episode.css' %}" type="text/css" media="screen"/>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<script src="{% static 'podcast/player.js' %}" type="text/javascript"></script>
-</head>
+{% endblock %}
 
-<body>
+{% block content %}
 	<h1>{{ episode.title }}</h1>
+	<h4>by {{ episode.podcast }}</h4>
+	<p>{{ episode.description }}</p>
+	<p>{{ episode.pubdate }}</p>
+	<!-- Here be ye audio player -->
+	<script type="text/javascript">
+		jQuery(document).ready(function() {
+
+			playpause = $('#playpause');
+			
+			song = new Audio('{{ episode.link }}', '{{ episode.link}}');
+
+			if (song.canPlayType('audio/mpeg;')) {
+				song.type= 'audio/mpeg';
+				song.src= '{{ episode.link }}';
+			} else {
+				song.type= 'audio/ogg';
+				song.src= '{{ episode.link }}';
+			}
+
+			playpause.on('click', function(e) {
+				e.preventDefault();
+				$(this).children('#play').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
+				if(song.paused) {
+					song.play();
+				}
+				else {
+					song.pause();
+				}
+			});
+		});
+	</script>
 
 	<button type="button" class="btn btn-default" aria-label="Left Align">
 		<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
 	</button>
 
-	<button type="button" class="btn btn-default">
+	<button type="button" class="btn btn-default" id="playpause">
 		<span class="glyphicon glyphicon-play" id="play" aria-hidden="true"></span>
 	</button>
 
@@ -46,9 +78,4 @@
 
 
 	</br></br>
-	<audio controls="controls">
-		<source src="{{ episode.link }}" type="audio/mpeg" />
-		Your browser does not support the audio element.
-	</audio>
-</body>
-</html>
+{% endblock %}
