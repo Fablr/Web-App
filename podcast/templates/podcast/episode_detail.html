@@ -14,6 +14,29 @@
 	<script src="{% static 'podcast/player.js' %}" type="text/javascript"></script>
 {% endblock %}
 
+{% block header %}
+	<div id="center">
+		<button type="button" class="btn btn-default" aria-label="Left Align">
+			<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+		</button>
+
+			<button type="button" class="btn btn-default" id="playpause">
+			<span class="glyphicon glyphicon-play" id="play" aria-hidden="true"></span>
+		</button>
+
+		<button type="button" class="btn btn-default">
+			<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+		</button>
+
+		<div id="rightheader">
+			<button type="button" class="btn btn-default" id="mute">
+				<span class="glyphicon glyphicon-volume-up" id="volume" aria-hidden="true"></span>
+			</button>
+		</div>
+	</div>
+{% endblock %}
+
+
 {% block content %}
 	<h1>{{ episode.title }}</h1>
 	<h4>by {{ episode.podcast }}</h4>
@@ -24,6 +47,7 @@
 		jQuery(document).ready(function() {
 
 			playpause = $('#playpause');
+			mute = $('#mute');
 			
 			song = new Audio('{{ episode.link }}', '{{ episode.link}}');
 
@@ -45,37 +69,19 @@
 					song.pause();
 				}
 			});
+			mute.on('click', function(e) {
+				e.preventDefault();
+				$(this).children('#volume').toggleClass('glyphicon-volume-up').toggleClass('glyphicon-volume-off');
+				if(song.muted) {
+					song.muted = false;
+				}
+				else {
+					song.muted = true;
+				}
+			});
+
 		});
 	</script>
-
-	<button type="button" class="btn btn-default" aria-label="Left Align">
-		<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
-	</button>
-
-	<button type="button" class="btn btn-default" id="playpause">
-		<span class="glyphicon glyphicon-play" id="play" aria-hidden="true"></span>
-	</button>
-
-	<button type="button" class="btn btn-default">
-		<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
-	</button>
-
-	<button type="button" class="btn btn-default" aria-label="Left Align">
-		<span class="glyphicon glyphicon-backward" aria-hidden="true"></span>
-	</button>
-
-	<button type="button" class="btn btn-default">
-		<span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span>
-	</button>
-
-	<button type="button" class="btn btn-default">
-		<span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
-	</button>
-
-	<button type="button" class="btn btn-default">
-		<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-	</button>
-
 
 	</br></br>
 {% endblock %}

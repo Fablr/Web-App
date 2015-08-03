@@ -10,11 +10,31 @@
 
 <body>
 	<div class="wrapper">
+		<header>
+		{% block header %}
+		<nav>
+			<ul>
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">About</a></li>
+				<li class="subscribe"><a href="#">Subscribe via. RSS</a></li>
+			</ul>
+		</nav>
+		{% endblock %}		
+		</header>
 		<div class="content">
 			{% block content %}
 
 			{% endblock %}
 		</div>
+		<nav>
+			<ul>
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">About</a></li>
+				<li><a href="#">Archives</a></li>
+				<li><a href="#">Contact</a></li>
+				<li class="subscribe"><a href="#">Subscribe via. RSS</a></li>
+			</ul>
+		</nav>
 		<div class="push"></div>
 	</div>
 	<footer>
