@@ -8,6 +8,7 @@
 
 {% block scripts %}
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 	<link rel="stylesheet" href="{% static 'podcast/episode.css' %}" type="text/css" media="screen"/>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -16,22 +17,27 @@
 
 {% block header %}
 	<div id="center">
-		<button type="button" class="btn btn-default" aria-label="Left Align">
-			<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
-		</button>
-
-			<button type="button" class="btn btn-default" id="playpause">
-			<span class="glyphicon glyphicon-play" id="play" aria-hidden="true"></span>
-		</button>
-
-		<button type="button" class="btn btn-default">
-			<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
-		</button>
-
-		<div id="rightheader">
-			<button type="button" class="btn btn-default" id="mute">
-				<span class="glyphicon glyphicon-volume-up" id="volume" aria-hidden="true"></span>
+		<div class="form-inline">
+			<button type="button" class="btn btn-default" aria-label="Left Align">
+				<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
 			</button>
+			<button type="button" class="btn btn-default" id="playpause">
+				<span class="glyphicon glyphicon-play" id="play" aria-hidden="true"></span>
+			</button>
+			<button type="button" class="btn btn-default">
+					<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+			</button>
+			
+			<label for="seek" id="curtime">00:00:00</label>	
+			<input type="range" id="seek" class="form-control" value="0" max="">
+			<label for="seek" id="duration">{{ episode.duration }}</label>	
+			<!-- <div id="slider"></div> -->
+
+			<div id="rightheader">
+				<button type="button" class="btn btn-default pull-right" id="mute">
+					<span class="glyphicon glyphicon-volume-up" id="volume" aria-hidden="true"></span>
+				</button>
+			</div>
 		</div>
 	</div>
 {% endblock %}
@@ -42,13 +48,14 @@
 	<h4>by {{ episode.podcast }}</h4>
 	<p>{{ episode.description }}</p>
 	<p>{{ episode.pubdate }}</p>
+
+
 	<!-- Here be ye audio player -->
 	<script type="text/javascript">
 		jQuery(document).ready(function() {
 
 			playpause = $('#playpause');
 			mute = $('#mute');
-			
 			song = new Audio('{{ episode.link }}', '{{ episode.link}}');
 
 			if (song.canPlayType('audio/mpeg;')) {
@@ -62,6 +69,7 @@
 			playpause.on('click', function(e) {
 				e.preventDefault();
 				$(this).children('#play').toggleClass('glyphicon-pause').toggleClass('glyphicon-play');
+				$('#seek').attr('max',song.duration);
 				if(song.paused) {
 					song.play();
 				}
@@ -79,8 +87,39 @@
 					song.muted = true;
 				}
 			});
+			  $(function() {
+				$( "#slider" ).slider();
+			  });
+		
+			$("#center #seek").bind("change", function() {
+				song.currentTime = $(this).val();
+				$("#seek").attr("max", song.duration);
+			});
+			song.addEventListener('timeupdate',function (){
+				curtime = parseInt(song.currentTime, 10);
+				$("#seek").attr("value", curtime);
+				var sec_num = parseInt(song.currentTime, 10);
+				var hours   = Math.floor(sec_num / 3600);
+				var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+				var seconds = sec_num - (hours * 3600) - (minutes * 60);
+				if (hours   < 10) {hours   = "0"+hours;}
+				if (minutes < 10) {minutes = "0"+minutes;}
+				if (seconds < 10) {seconds = "0"+seconds;}
+				var currentTime    = hours+':'+minutes+':'+seconds;
+				
+				var sec_num = parseInt(song.duration, 10);
+				var hours   = Math.floor(sec_num / 3600);
+				var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+				var seconds = sec_num - (hours * 3600) - (minutes * 60);
+				if (hours   < 10) {hours   = "0"+hours;}
+				if (minutes < 10) {minutes = "0"+minutes;}
+				if (seconds < 10) {seconds = "0"+seconds;}
+				var fullTime    = hours+':'+minutes+':'+seconds;
 
-		});
+				$("#center #curtime").text(currentTime);
+			});
+		
+	});
 	</script>
 
 	</br></br>
