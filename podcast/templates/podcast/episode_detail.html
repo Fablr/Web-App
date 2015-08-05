@@ -29,9 +29,10 @@
 			</button>
 			
 			<label for="seek" id="curtime">00:00:00</label>	
-			<input type="range" id="seek" class="form-control" value="0" step="any" max="80">
+			<!-- <input type="range" id="seek" class="form-control" value="0" max="80"> -->
+			<div id="seek" value="0"></div>
 			<label for="seek" id="duration">{{ episode.duration }}</label>	
-			<!-- <div id="slider"></div> -->
+
 
 			<div id="rightheader">
 				<button type="button" class="btn btn-default pull-right" id="mute">
@@ -58,6 +59,8 @@
 			mute = $('#mute');
 			song = new Audio('{{ episode.link }}', '{{ episode.link}}');
 
+
+			//var semaphore = 0;
 			if (song.canPlayType('audio/mpeg;')) {
 				song.type= 'audio/mpeg';
 				song.src= '{{ episode.link }}';
@@ -65,6 +68,19 @@
 				song.type= 'audio/ogg';
 				song.src= '{{ episode.link }}';
 			}
+
+			slider = $( "#seek" ).slider({
+				max: 110, 
+				value: 0,
+				slide: function( event, ui ) {
+					$( ".slidervalue" ).val( ui.value );
+					song.currentTime = ui.value;
+				}       					
+			});
+			song.addEventListener('loadedmetadata', function(){
+				slider.slider("option", "max", parseInt(song.duration, 10));
+				console.log(song.duration);
+			});
 
 			playpause.on('click', function(e) {
 				e.preventDefault();
@@ -87,19 +103,9 @@
 					song.muted = true;
 				}
 			});
-			  $(function() {
-				$( "#slider" ).slider();
-			  });
-		
-			$("#center #seek").bind("change", function() {
-				song.currentTime = $(this).val();
-				$("#seek").attr("max", song.duration);
-			});
 			song.addEventListener('timeupdate',function (){
 				curtime = parseInt(song.currentTime, 10);
-				$("#center #seek").attr("value", curtime);
-				$('#seek').hide().show(0);
-				$("#seek").value = song.currentTime;
+				slider.slider("option", "value", curtime);
 				var sec_num = parseInt(song.currentTime, 10);
 				var hours   = Math.floor(sec_num / 3600);
 				var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
@@ -108,51 +114,9 @@
 				if (minutes < 10) {minutes = "0"+minutes;}
 				if (seconds < 10) {seconds = "0"+seconds;}
 				var currentTime    = hours+':'+minutes+':'+seconds;
-				
-				var sec_num = parseInt(song.duration, 10);
-				var hours   = Math.floor(sec_num / 3600);
-				var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-				var seconds = sec_num - (hours * 3600) - (minutes * 60);
-				if (hours   < 10) {hours   = "0"+hours;}
-				if (minutes < 10) {minutes = "0"+minutes;}
-				if (seconds < 10) {seconds = "0"+seconds;}
-				var fullTime    = hours+':'+minutes+':'+seconds;
-
 				$("#center #curtime").text(currentTime);
 			});
-		
-		$("#seek").mousemove( function(e){
-			var sec_num = parseInt($(this).val(), 10);
-			var hours   = Math.floor(sec_num / 3600);
-			var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-			var seconds = sec_num - (hours * 3600) - (minutes * 60);
-			if (hours   < 10) {hours   = "0"+hours;}
-			if (minutes < 10) {minutes = "0"+minutes;}
-			if (seconds < 10) {seconds = "0"+seconds;}
-			var currentTime    = hours+':'+minutes+':'+seconds;
-			
-			$("#center #curtime").html(currentTime);
-		});
-		$("#seek").change( function(e){
-			var sec_num = parseInt($(this).val(), 10);
-			var hours   = Math.floor(sec_num / 3600);
-			var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-			var seconds = sec_num - (hours * 3600) - (minutes * 60);
-			if (hours   < 10) {hours   = "0"+hours;}
-			if (minutes < 10) {minutes = "0"+minutes;}
-			if (seconds < 10) {seconds = "0"+seconds;}
-			var currentTime    = hours+':'+minutes+':'+seconds;
-			
-			$("#center #curtime").html(currentTime);
-		});
-		
 
-
-
-		song.addEventListener('timeupdate', function(){
-
-			});
-	
 	});
 	</script>
 
