@@ -29,17 +29,25 @@
 		width: calc(100% - 350px);
 		left: 15px;
 		padding-right: 5px;
-		top: 1px;
+		top: 2px;
 	}
 }
 
 #center #seek{
 	display: inline-block;
 	width: 80%;
-	width: calc(100% - 350px);
+	width: calc(100% - 480px);
 	left: 15px;
 	padding-right: 5px;
-	top: 1px;
+	top: 2px;
+}
+
+#center #volume{
+	display: inline-block;
+	width: 120px;
+	left: 10px;
+	padding-right: 5px;
+	top: 2px;
 }
 
 .ui-slider .ui-slider-handle {

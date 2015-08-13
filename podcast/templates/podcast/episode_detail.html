@@ -1,6 +1,6 @@
 {% extends "podcast/base.html" %}
 {% load staticfiles %}
-
+{% load comments %}
 
 {% block title %}	
 	<title>Episode {{ episode.title }}</title>
@@ -32,11 +32,11 @@
 			<!-- <input type="range" id="seek" class="form-control" value="0" max="80"> -->
 			<div id="seek" value="0"></div>
 			<label for="seek" id="duration">{{ episode.duration }}</label>	
-
+			<div id="volume" value="0.5"></div>
 
 			<div id="rightheader">
 				<button type="button" class="btn btn-default pull-right" id="mute">
-					<span class="glyphicon glyphicon-volume-up" id="volume" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-volume-up" id="volumemute" aria-hidden="true"></span>
 				</button>
 			</div>
 		</div>
@@ -48,8 +48,28 @@
 	<h1>{{ episode.title }}</h1>
 	<h4>by {{ episode.podcast }}</h4>
 	<p>{{ episode.description }}</p>
-	<p>{{ episode.pubdate }}</p>
+	<p>{{ episode.pubdate }}</p></br></br>
 
+	{% get_comment_count for episode as comment_count %}
+	<p>{{ comment_count }} comments have been posted.</p>
+	{% render_comment_list for episode %}
+	{% get_comment_form for episode as form %}
+	<table>
+	  <form action="{% comment_form_target %}" method="post">
+		{% csrf_token %}
+		{{ form }}
+		<tr>
+		  <td colspan="2">
+			<input type="submit" name="submit" value="Post">
+			<input type="submit" name="preview" value="Preview">
+		  </td>
+		</tr>
+	  </form>
+	</table>
+	{% for comment in comment_list %}
+	<p>Posted by: {{ comment.user_name }} on {{ comment.submit_date }}</p>
+	<p>Comment: {{ comment.comment }}</p>
+	{% endfor %}
 
 	<!-- Here be ye audio player -->
 	<script type="text/javascript">
@@ -59,7 +79,6 @@
 			mute = $('#mute');
 			song = new Audio('{{ episode.link }}', '{{ episode.link}}');
 
-
 			//var semaphore = 0;
 			if (song.canPlayType('audio/mpeg;')) {
 				song.type= 'audio/mpeg';
@@ -68,6 +87,14 @@
 				song.type= 'audio/ogg';
 				song.src= '{{ episode.link }}';
 			}
+			vslider = $( "#volume" ).slider({
+				max: 100, 
+				value: 50,
+				slide: function( event, ui ) {
+					$( ".slidervalue" ).val( ui.value );
+					song.volume = (ui.value/100);
+				}       					
+			});
 
 			slider = $( "#seek" ).slider({
 				max: 110, 
@@ -95,7 +122,7 @@
 			});
 			mute.on('click', function(e) {
 				e.preventDefault();
-				$(this).children('#volume').toggleClass('glyphicon-volume-up').toggleClass('glyphicon-volume-off');
+				$(this).children('#volumemute').toggleClass('glyphicon-volume-up').toggleClass('glyphicon-volume-off');
 				if(song.muted) {
 					song.muted = false;
 				}

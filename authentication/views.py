@@ -10,7 +10,7 @@ from authentication.models import UserProfile
 from authentication.forms import UserCreateForm
 from authentication.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
-
+from django_comments.models import Comment
 
 from django.http import HttpResponse
 from django.contrib.auth import login
@@ -92,6 +92,11 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+
+class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
 
 
 

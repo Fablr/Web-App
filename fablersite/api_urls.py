@@ -15,6 +15,7 @@ router.register(r'userprofile', UserProfileViewSet)
 router.register(r'podcast', PodcastViewSet)
 router.register(r'episode', EpisodeViewSet)
 router.register(r'publisher', PublisherViewSet)
+router.register(r'comment', CommentViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.

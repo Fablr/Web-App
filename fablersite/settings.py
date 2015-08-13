@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
     #outside apps
+    'django.contrib.sites',
+    'django_comments',
     'oauth2_provider',
     'rest_framework',
     'django_hosts',
@@ -71,6 +73,8 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'fablersite.urls'
 ROOT_HOSTCONF = 'fablersite.hosts'
 DEFAULT_HOST = 'www'
+
+SITE_ID = '1'
 
 # If running on Amazon session cookies should be on fablersite-dev, otherwise run local test.com. Note to user, make sure your /etc/hosts has a mapping from test.com to 127.0.0.1; when calling this url, make sure you use test.com:8000
 if 'RDS_DB_NAME' in os.environ:
