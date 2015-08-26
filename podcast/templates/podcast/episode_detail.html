@@ -1,6 +1,6 @@
 {% extends "podcast/base.html" %}
 {% load staticfiles %}
-{% load comments %}
+{% load threadedcomments_tags %}
 
 {% block title %}	
 	<title>Episode {{ episode.title }}</title>
@@ -46,31 +46,11 @@
 
 {% block content %}
 	<h1>{{ episode.title }}</h1>
-	<h4>by {{ episode.podcast }}</h4>
+	<h4>by <a href="http://{{request.META.HTTP_HOST}}/podcast_{{ episode.podcast.id }}">{{episode.podcast}}</a></h4>
+	
 	<p>{{ episode.description }}</p>
 	<p>{{ episode.pubdate }}</p></br></br>
-
-	{% get_comment_count for episode as comment_count %}
-	<p>{{ comment_count }} comments have been posted.</p>
-	{% render_comment_list for episode %}
-	{% get_comment_form for episode as form %}
-	<table>
-	  <form action="{% comment_form_target %}" method="post">
-		{% csrf_token %}
-		{{ form }}
-		<tr>
-		  <td colspan="2">
-			<input type="submit" name="submit" value="Post">
-			<input type="submit" name="preview" value="Preview">
-		  </td>
-		</tr>
-	  </form>
-	</table>
-	{% for comment in comment_list %}
-	<p>Posted by: {{ comment.user_name }} on {{ comment.submit_date }}</p>
-	<p>Comment: {{ comment.comment }}</p>
-	{% endfor %}
-
+	
 	<!-- Here be ye audio player -->
 	<script type="text/javascript">
 		jQuery(document).ready(function() {
@@ -148,4 +128,79 @@
 	</script>
 
 	</br></br>
+{% endblock %}
+
+{% block comments %}
+
+	 <script type="text/javascript">
+
+        function show_reply_form(event) {
+            var $this = $(this);
+            var comment_id = $this.data('comment-id');
+
+            $('#id_parent').val(comment_id);
+            $('#form-comment').insertAfter($this.closest('.comment'));
+        };
+
+        function cancel_reply_form(event) {
+            $('#id_comment').val('');
+            $('#id_parent').val('');
+            $('#form-comment').appendTo($('#wrap_write_comment'));
+        }
+
+        $.fn.ready(function() {
+            $('.comment_reply_link').click(show_reply_form);
+            $('#cancel_reply').click(cancel_reply_form);
+        })
+
+    </script>
+
+    {% get_comment_list for episode as comment_list %}
+    <div class="episode">
+        <p class="title">{{ episode.title }}</p>
+        <p class="text">{{ episode.text }}</p>
+    </div>
+
+    <div class="comments_wrapper" id="comments">
+        <div class="comments_length">
+            <p>{{ comment_list|length }} Comments</p>
+        </div>
+
+        <div class="comments">
+            {% for comment in comment_list|fill_tree|annotate_tree %}{% ifchanged comment.parent_id %}{% else %}</li>{% endifchanged %}{% if not comment.open and not comment.close %}</li>{% endif %}{% if comment.open %}
+                <ul>{% endif %}
+            <li class="comment_li" id="c{{ comment.id }}">{# c## is used by the absolute URL of the Comment model, so keep that as it is. #}
+                <div class="comment" style="margin-left: {{ comment.depth }}em;">
+                    <div class="comment_info">
+                        <div class="comment_user">{{ comment.user_name }}</div>
+                        <div class="comment_data">
+                            {{ comment.submit_date|date:"d M Y, H:i" }}
+                          | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}" class="comment_reply_link">Reply</a>
+                        </div>
+                    </div>
+                    <div class="comment_text">
+                        {{ comment.comment }}
+                    </div>
+                </div>
+                {% for close in comment.close %}</li></ul>{% endfor %}
+
+            {% endfor %}
+        </div>
+
+        <div id="wrap_write_comment">
+            <div id="form-comment">
+                {% get_comment_form for episode as form %}
+                <form action="/comments/post/" method="post">{% csrf_token %}
+                    {{ form.as_p }}{# just to keep the example simple. Consider using django-crispy-forms in real life #}
+
+                    <p>
+                      <input type="submit" value="Submit Comment"/>
+                      <a href="#c0" id="cancel_reply">cancel reply</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}

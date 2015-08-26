@@ -23,6 +23,8 @@ article, aside, details, figcaption, figure,
 footer, panel, hgroup, menu, nav, section {
   display: block; }
 
+
+
 html, body {
 	height: 100%;
 }
@@ -61,3 +63,17 @@ footer {
 	background: #3a3a3a;
 }
 
+.content {
+	background-color: #000000;
+	color: white;
+	font-family: 'Avenir Next', sans-serif;
+	width: 750px;
+	margin: 0 auto;
+	margin-top: 75px;	
+	padding: 5px;
+}
+
+
+h1 {
+	margin: 0px !important;
+}

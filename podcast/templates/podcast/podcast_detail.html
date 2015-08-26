@@ -1,7 +1,28 @@
-<h1>{{ podcast.title }}</h1>
+{% extends "podcast/base.html" %}
+{% load staticfiles %}
 
-<ul>
-{% for episode in episode_list %}
-    <li>{{ episode.title }}</li>
-{% endfor %}
-</ul>
+{% block scripts %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="{% static 'podcast/podcast.css' %}" type="text/css" media="screen"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="{% static 'podcast/player.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block content %}
+	<h1>{{ podcast.title }}</h1>
+	<h4>by <a href="http://{{request.META.HTTP_HOST}}/publisher_{{ podcast.publisher.id }}">{{podcast.publisher}}</a></h4>
+	</br>
+	<h5>Episode List </h5>
+	<ul>
+	{% for episode in episode_list %}
+		<li>
+		<button type="button" class="btn btn-default btn-xs">
+			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+		</button>
+
+		<a href="http://{{request.META.HTTP_HOST}}/episode_{{episode.id}}">{{ episode.title }}</a></li>
+	{% endfor %}
+	</ul>
+{% endblock %}

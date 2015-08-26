@@ -10,6 +10,10 @@ class Publisher(models.Model):
     email = models.EmailField(blank=True)
     name = models.CharField(max_length=255, blank=True, unique=True)
     users = models.ManyToManyField(User, blank=True)
+    #slug = models.SlugField(unique=True)
+    #@models.permalink
+    #def get_absolute_url(self):
+    #    return 'podcast:publisher', (self.slug,)
     def __str__(self):
         return self.name
 
@@ -30,10 +34,12 @@ class Podcast(models.Model):
     blocked = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
     keywords = models.CharField(max_length=100, blank=True)
+    #slug = models.SlugField(unique=True)
+    #@models.permalink
+    #def get_absolute_url(self):
+    #    return 'podcast:podcast', (self.slug,)
     def __str__(self):
         return self.title
-    # ??
-
     # image = FieleField(max_length=255)
 
 
@@ -50,10 +56,15 @@ class Episode(models.Model):
     pubdate = models.DateTimeField(null=True)
     duration = models.DurationField(null=True)
     keywords = models.CharField(max_length=100, blank=True)
-    # guid = URLField(max_length=255, unique=True)
     explicit = models.CharField(max_length=255, blank=True)
+    #slug = models.SlugField(unique=True)
+    #@models.permalink
+    #def get_absolute_url(self):
+    #    return 'podcast:episode', (self.slug,)
     def __str__(self):
         return self.title
+
+
 
 # class EpisodeTimeline(models.Model)
 

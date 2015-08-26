@@ -4,9 +4,10 @@ cement==2.4.0
 cffi==1.1.2
 cryptography==0.9.1
 defusedxml==0.4.1
-Django==1.8.3
+Django==1.8.4
 django-appconf==1.0.1
 django-braces==1.8.0
+django-contrib-comments==1.6.1
 django-cors-headers==1.1.0
 django-dual-authentication==1.0.0
 django-durationfield==0.5.2

@@ -40,8 +40,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
     #outside apps
-    'django.contrib.sites',
+    'threadedcomments',
     'django_comments',
+    'django.contrib.sites',
     'oauth2_provider',
     'rest_framework',
     'django_hosts',
@@ -55,6 +56,8 @@ INSTALLED_APPS = (
     'authentication',
     'podcast',
 )
+
+COMMENTS_APP = 'threadedcomments'
 
 MIDDLEWARE_CLASSES = (
     'django_hosts.middleware.HostsRequestMiddleware',
@@ -103,6 +106,12 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -111,19 +120,6 @@ TEMPLATES = [
         },
     },
 ]
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-  'django.core.context_processors.request',
-  'django.contrib.auth.context_processors.auth',
-  'django.template.context_processors.debug',
-  'django.template.context_processors.i18n',
-  'django.template.context_processors.media',
-  'django.template.context_processors.static',
-  'django.template.context_processors.tz',
-  'django.contrib.messages.context_processors.messages',
-  'social.apps.django_app.context_processors.backends',
-  'social.apps.django_app.context_processors.login_redirect',
-)
 
 FACEBOOK_SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
