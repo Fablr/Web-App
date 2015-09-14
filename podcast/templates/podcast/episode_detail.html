@@ -174,7 +174,7 @@
                     <div class="comment_info">
                         <div class="comment_user">{{ comment.user_name }}</div>
                         <div class="comment_data">
-                            {{ comment.submit_date|date:"d M Y, H:i" }}
+                            {{ comment.user }} - {{ comment.submit_date|date:"d M Y, H:i" }} 
                           | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}" class="comment_reply_link">Reply</a>
                         </div>
                     </div>

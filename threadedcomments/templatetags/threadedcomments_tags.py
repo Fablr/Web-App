@@ -35,7 +35,7 @@ class BaseThreadedCommentNode(BaseCommentNode):
             # {% get_whatever for obj as varname %}
             if tokens[3] != 'as':
                 raise template.TemplateSyntaxError("Fourth argument in %r must be 'as'" % tokens[0])
-
+            
             return cls(
                 object_expr=parser.compile_filter(tokens[2]),
                 as_varname=tokens[4],

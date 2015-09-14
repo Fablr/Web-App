@@ -4,10 +4,16 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views import generic
 
+
 from podcast.models import Podcast, Publisher, Episode
+from threadedcomments.models import ThreadedComment
 from podcast.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 import django_filters
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions, mixins, generics
 
 class PublisherDetailView(generic.DetailView):
     model = Publisher
@@ -55,4 +61,43 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     queryset = Episode.objects.all()
     serializer_class = EpisodeSerializer
     filter_class = EpisodeFilter
+
+#class CommentViewSet(viewsets.ModelViewSet):
+#    queryset = ThreadedComment.objects.exclude(parent__isnull=False)
+#    serializer_class = EpisodeCommentSerializer
+
+class EpisodeCommentsList(APIView):
+    def get_object(self, pk):
+        try: 
+            return ThreadedComment.objects.all()
+        except ThreadedComment.DoesNotExist:
+            raise Http404
+    def get(self, request, format=None):
+        comments = ThreadedComment.objects.all()
+        serializer = EpisodeCommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class EpisodeCommentsDetail(APIView):
+    def get_object(self, pk):
+        try: 
+            return ThreadedComment.objects.filter(object_pk=pk)
+        except ThreadedComment.DoesNotExist:
+            raise Http404
+    def get(self, request, pk=None, format=None):
+        if pk is None:
+            comments = ThreadedComment.objects.all()
+            serializer = EpisodeCommentThreadSerializer(comments, many=True)
+            return Response(serializer.data)            
+        else:
+            comments = ThreadedComment.objects.filter(object_pk=pk)
+            serializer = EpisodeCommentThreadSerializer(comments, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = EpisodeCommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -13,7 +13,7 @@
         <li id="c{{ comment.id }}">{# c## is used by the absolute URL of the Comment model, so keep that as it is. #}
             <dl class="comment">
                 <dt>
-                    {{ comment.submit_date }} - {{ comment.name }}
+                    {{ comment.submit_date }} - {{ comment.name }} - herpa - {{ comment.user }}
                 </dt>
                 <dd>
                     {{ comment.comment|linebreaks }}

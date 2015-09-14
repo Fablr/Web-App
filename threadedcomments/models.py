@@ -3,17 +3,50 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from .compat import Comment, CommentManager
 
+from django_comments.models import BaseCommentAbstractModel
+
 PATH_SEPARATOR = getattr(settings, 'COMMENT_PATH_SEPARATOR', '/')
 PATH_DIGITS = getattr(settings, 'COMMENT_PATH_DIGITS', 10)
 
+COMMENT_MAX_LENGTH = getattr(settings, 'COMMENT_MAX_LENGTH', 3000)
 
-class ThreadedComment(Comment):
-    title = models.TextField(_('Title'), blank=True)
+class ThreadedComment(BaseCommentAbstractModel):
+
+    # Who posted this comment? If ``user`` is set then it was an authenticated
+    # user; otherwise at least user_name should have been set and the comment
+    # was posted by a non-authenticated user.
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
+                             blank=False, null=False, related_name="%(class)s_comments")
+    
+    comment = models.TextField(_('comment'), max_length=COMMENT_MAX_LENGTH)
+
+    # Metadata about the comment
+    submit_date = models.DateTimeField(_('date/time submitted'), default=None)
+    ip_address = models.GenericIPAddressField(_('IP address'), unpack_ipv4=True, blank=True, null=True)
+    is_public = models.BooleanField(_('is public'), default=True,
+                                    help_text=_('Uncheck this box to make the comment effectively '
+                                                'disappear from the site.'))
+    is_removed = models.BooleanField(_('is removed'), default=False,
+                                     help_text=_('Check this box if the comment is inappropriate. '
+                                                 'A "This comment has been removed" message will '
+                                                 'be displayed instead.'))
+
     parent = models.ForeignKey('self', null=True, blank=True, default=None, related_name='children', verbose_name=_('Parent'))
     last_child = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_('Last child'))
     tree_path = models.CharField(_('Tree path'), max_length=500, editable=False)
 
     objects = CommentManager()
+
+    def _get_name(self):
+        return self.userinfo["name"]
+
+    def _set_name(self, val):
+        if self.user_id:
+            raise AttributeError(_("This comment was posted by an authenticated "
+                                   "user and thus the name is read-only."))
+        self.user_name = val
+
+    name = property(_get_name, _set_name, doc="The name of the user who posted this comment")
 
     @property
     def depth(self):
