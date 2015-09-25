@@ -4,7 +4,8 @@ from rest_framework_recursive.fields import RecursiveField
 from podcast.models import Podcast, Episode, Publisher
 from threadedcomments.models import ThreadedComment
 
-
+from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 # first we define the serializers
 class PublisherSerializer(serializers.ModelSerializer):
@@ -39,10 +40,13 @@ class EpisodeCommentSerializer(serializers.ModelSerializer):
     #parent = RecursiveField(allow_null=True, many=True)
     class Meta:
         model = ThreadedComment
-        fields = ('comment', 'user', 'submit_date', 'parent', 'ip_address')
+        fields = ('comment', 'user', 'submit_date', 'parent', 'ip_address', 'object_pk')
 
     def create(self, validated_data):
-        return ThreadedComment(**validated_data)
+        ctype = ContentType.objects.get_by_natural_key('podcast', 'episode')
+        validated_data['content_type'] = ctype
+        validated_data['site_id'] = settings.SITE_ID
+        return ThreadedComment.objects.create(**validated_data)
 
     #def update(self, validated_data):
 

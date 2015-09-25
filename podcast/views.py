@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views import generic
 
-
 from podcast.models import Podcast, Publisher, Episode
 from threadedcomments.models import ThreadedComment
 from podcast.serializers import *
@@ -13,7 +12,7 @@ import django_filters
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions, mixins, generics
+from rest_framework import authentication, permissions, mixins, generics, status
 
 class PublisherDetailView(generic.DetailView):
     model = Publisher
@@ -94,7 +93,7 @@ class EpisodeCommentsDetail(APIView):
             serializer = EpisodeCommentThreadSerializer(comments, many=True)
             return Response(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request, pk=None, format=None):
         serializer = EpisodeCommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
