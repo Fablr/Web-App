@@ -31,7 +31,7 @@ class EpisodeCommentThreadSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     class Meta:
         model = ThreadedComment
-        fields = ('id', 'comment', 'user', 'submit_date', 'parent', 'username')
+        fields = ('id', 'comment', 'user', 'submit_date', 'parent', 'username', 'is_removed')
 
     def get_username(self, obj):
         return obj.user.username
@@ -40,7 +40,7 @@ class EpisodeCommentSerializer(serializers.ModelSerializer):
     #parent = RecursiveField(allow_null=True, many=True)
     class Meta:
         model = ThreadedComment
-        fields = ('comment', 'user', 'submit_date', 'parent', 'ip_address', 'object_pk')
+        fields = ('comment', 'parent')
 
     def create(self, validated_data):
         ctype = ContentType.objects.get_by_natural_key('podcast', 'episode')
@@ -48,6 +48,6 @@ class EpisodeCommentSerializer(serializers.ModelSerializer):
         validated_data['site_id'] = settings.SITE_ID
         return ThreadedComment.objects.create(**validated_data)
 
-    #def update(self, validated_data):
+#class EpisodeCommentUpdateSerializer
 
 
