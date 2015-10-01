@@ -75,6 +75,7 @@ urlpatterns = patterns('',
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('^episodethread/(?P<pk>[0-9]+)/$', views.EpisodeThreadList.as_view()),
     url('^episodecomments/(?P<pk>[0-9]+)/$', views.EpisodeCommentsDetail.as_view(), name='episode-comments'),
+    url('^vote/$', views.VoteDetail.as_view(), name='vote'),
     url(r'^(?P<backend>[^/]+)/$', register_by_access_token),
 )
 

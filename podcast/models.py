@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from durationfield.db.models.fields.duration import DurationField
-
+from threadedcomments.models import ThreadedComment
+from django.utils.translation import ugettext_lazy as _
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Publisher(models.Model):
     """
@@ -64,6 +67,16 @@ class Episode(models.Model):
     def __str__(self):
         return self.title
 
+class Vote(models.Model):
+    comment = models.ForeignKey(ThreadedComment, related_name='commentid')
+    voter_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('voter_user'), related_name='voter_user')
+    voted_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('voted_user'), related_name='voted_user')
+    vote_time = models.DateTimeField(null=False, blank=False)
+    value = models.SmallIntegerField(
+        validators=[MinValueValidator(-1), MaxValueValidator(1)]
+        )
+    class Meta:
+        unique_together = ("voter_user", "comment")
 
 
 # class EpisodeTimeline(models.Model)

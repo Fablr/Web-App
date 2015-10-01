@@ -8,7 +8,7 @@ from django_comments.models import BaseCommentAbstractModel
 PATH_SEPARATOR = getattr(settings, 'COMMENT_PATH_SEPARATOR', '/')
 PATH_DIGITS = getattr(settings, 'COMMENT_PATH_DIGITS', 10)
 
-COMMENT_MAX_LENGTH = getattr(settings, 'COMMENT_MAX_LENGTH', 3000)
+COMMENT_MAX_LENGTH = getattr(settings, 'COMMENT_MAX_LENGTH', 5000)
 
 class ThreadedComment(BaseCommentAbstractModel):
 
@@ -19,7 +19,7 @@ class ThreadedComment(BaseCommentAbstractModel):
                              blank=False, null=False, related_name="%(class)s_comments")
     
     comment = models.TextField(_('comment'), max_length=COMMENT_MAX_LENGTH)
-
+    
     # Metadata about the comment
     submit_date = models.DateTimeField(_('date/time submitted'), default=None)
     ip_address = models.GenericIPAddressField(_('IP address'), unpack_ipv4=True, blank=True, null=True)
@@ -35,7 +35,11 @@ class ThreadedComment(BaseCommentAbstractModel):
     last_child = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_('Last child'))
     tree_path = models.CharField(_('Tree path'), max_length=500, editable=False)
 
+    # net_votes = models.IntegerField(blank=False)
+
     objects = CommentManager()
+
+    vote_weight = models.IntegerField(blank=False, null=False)
 
     def _get_name(self):
         return self.userinfo["name"]
