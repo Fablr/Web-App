@@ -89,7 +89,10 @@ class VoteDetail(APIView):
                 vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
                 comment_id.vote_weight = comment_id.vote_weight - vote.value
                 vote.value = int(request.data['value'])
-                vote.save()
+                if vote.value == 0:
+                    vote.delete()
+                else:
+                    vote.save()
             except Vote.DoesNotExist:
                 vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
             comment_id.vote_weight = comment_id.vote_weight + int(request.data['value'])
