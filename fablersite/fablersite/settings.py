@@ -40,9 +40,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
     #outside apps
-    'threadedcomments',
-    'django_comments',
-    'django.contrib.sites',
     'oauth2_provider',
     'rest_framework',
     'django_hosts',
@@ -56,8 +53,6 @@ INSTALLED_APPS = (
     'authentication',
     'podcast',
 )
-
-COMMENTS_APP = 'threadedcomments'
 
 MIDDLEWARE_CLASSES = (
     'django_hosts.middleware.HostsRequestMiddleware',

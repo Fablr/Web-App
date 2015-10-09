@@ -68,93 +68,93 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #    queryset = ThreadedComment.objects.exclude(parent__isnull=False)
 #    serializer_class = EpisodeCommentSerializer
 
-class VoteDetail(APIView):
-    def get(self, request, pk=None, format=None):
-        if pk is None:
-            votes = Vote.objects.all()
-            serializer = VoteSerializer(votes, many=True)
-            return Response(serializer.data)            
-        else:
-            votes = Vote.objects.get(id=pk)
-            serializer = VoteSerializer(votes, many=True)
-            return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = VoteSerializer(data=request.data)
-        if serializer.is_valid():
-            # Using episode id, update comment's vote weight 
-            comment_id = ThreadedComment.objects.get(pk=request.data['comment'])
-            # If vote already exists update existing vote to reflect new value
-            try: 
-                vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
-                comment_id.vote_weight = comment_id.vote_weight - vote.value
-                vote.value = int(request.data['value'])
-                if vote.value == 0:
-                    vote.delete()
-                else:
-                    vote.save()
-            except Vote.DoesNotExist:
-                vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
-            comment_id.vote_weight = comment_id.vote_weight + int(request.data['value'])
-            comment_id.save()            
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-class EpisodeThreadList(APIView):
-    def get_object(self, pk):
-        try: 
-            return ThreadedComment.objects.all()
-        except ThreadedComment.DoesNotExist:
-            raise Http404
-    def get(self, request, pk=None, format=None):
-        if pk is None:
-            comments = ThreadedComment.objects.all()
-            serializer = EpisodeCommentThreadSerializer(comments, many=True)
-            return Response(serializer.data)            
-        else:
-            comments = ThreadedComment.objects.filter(object_pk=pk)
-            serializer = EpisodeCommentThreadSerializer(comments, many=True)
-            return Response(serializer.data)
-
-
-class EpisodeCommentsDetail(APIView):
-    def get_object(self, pk):
-        try: 
-            return ThreadedComment.objects.filter(object_pk=pk)
-        except ThreadedComment.DoesNotExist:
-            raise Http404
-    def get(self, request, pk=None, format=None):
-        if pk is None:
-            comments = ThreadedComment.objects.all()
-            serializer = EpisodeCommentThreadSerializer(comments, many=True)
-            return Response(serializer.data)            
-        else:
-            comments = ThreadedComment.objects.get(id=pk)
-            serializer = EpisodeCommentThreadSerializer(comments, many=True)
-            return Response(serializer.data)
-
-    def post(self, request, pk, format=None):
-        serializer = EpisodeCommentSerializer(data=request.data)
-        if serializer.is_valid():
-            # Create a comment, then create a corresponding vote
-            comment = serializer.save(user=request.user, object_pk=pk, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], vote_weight=1)
-            vote = Vote(voter_user=request.user, voted_user=request.user, comment=comment, value=1, vote_time=timezone.now())
-            vote.save()
-            serializer = EpisodeCommentThreadSerializer(comment)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        comment = ThreadedComment.objects.get(pk=pk)
-        comment.delete()
-        queryset = Vote.objects.filter(comment_id=pk)
-        queryset.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#class VoteDetail(APIView):
+#    def get(self, request, pk=None, format=None):
+#        if pk is None:
+#            votes = Vote.objects.all()
+#            serializer = VoteSerializer(votes, many=True)
+#            return Response(serializer.data)            
+#        else:
+#            votes = Vote.objects.get(id=pk)
+#            serializer = VoteSerializer(votes, many=True)
+#            return Response(serializer.data)
+#
+#    def post(self, request, format=None):
+#        serializer = VoteSerializer(data=request.data)
+#        if serializer.is_valid():
+#            # Using episode id, update comment's vote weight 
+#            comment_id = ThreadedComment.objects.get(pk=request.data['comment'])
+#            # If vote already exists update existing vote to reflect new value
+#            try: 
+#                vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
+#                comment_id.vote_weight = comment_id.vote_weight - vote.value
+#                vote.value = int(request.data['value'])
+#                if vote.value == 0:
+#                    vote.delete()
+#                else:
+#                    vote.save()
+#            except Vote.DoesNotExist:
+#                vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
+#            comment_id.vote_weight = comment_id.vote_weight + int(request.data['value'])
+#            comment_id.save()            
+#            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#
+#
+#
+#
+#class EpisodeThreadList(APIView):
+#    def get_object(self, pk):
+#        try: 
+#            return ThreadedComment.objects.all()
+#        except ThreadedComment.DoesNotExist:
+#            raise Http404
+#    def get(self, request, pk=None, format=None):
+#        if pk is None:
+#            comments = ThreadedComment.objects.all()
+#            serializer = EpisodeCommentThreadSerializer(comments, many=True)
+#            return Response(serializer.data)            
+#        else:
+#            comments = ThreadedComment.objects.filter(object_pk=pk)
+#            serializer = EpisodeCommentThreadSerializer(comments, many=True)
+#            return Response(serializer.data)
+#
+#
+#class EpisodeCommentsDetail(APIView):
+#    def get_object(self, pk):
+#        try: 
+#            return ThreadedComment.objects.filter(object_pk=pk)
+#        except ThreadedComment.DoesNotExist:
+#            raise Http404
+#    def get(self, request, pk=None, format=None):
+#        if pk is None:
+#            comments = ThreadedComment.objects.all()
+#            serializer = EpisodeCommentThreadSerializer(comments, many=True)
+#            return Response(serializer.data)            
+#        else:
+#            comments = ThreadedComment.objects.get(id=pk)
+#            serializer = EpisodeCommentThreadSerializer(comments, many=True)
+#            return Response(serializer.data)
+#
+#    def post(self, request, pk, format=None):
+#        serializer = EpisodeCommentSerializer(data=request.data)
+#        if serializer.is_valid():
+#            # Create a comment, then create a corresponding vote
+#            comment = serializer.save(user=request.user, object_pk=pk, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], vote_weight=1)
+#            vote = Vote(voter_user=request.user, voted_user=request.user, comment=comment, value=1, vote_time=timezone.now())
+#            vote.save()
+#            serializer = EpisodeCommentThreadSerializer(comment)
+#            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#        
+#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#    def delete(self, request, pk):
+#        comment = ThreadedComment.objects.get(pk=pk)
+#        comment.delete()
+#        queryset = Vote.objects.filter(comment_id=pk)
+#        queryset.delete()
+#        return Response(status=status.HTTP_204_NO_CONTENT)
 
     #def update(self, request, pk):
         #comment = 

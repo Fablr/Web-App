@@ -26,41 +26,41 @@ class EpisodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Episode
 
-class VoteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vote
-        fields = ('value', 'comment')
+#class VoteSerializer(serializers.ModelSerializer):
+#    class Meta:
+#        model = Vote
+#        fields = ('value', 'comment')
 
 
-class EpisodeCommentThreadSerializer(serializers.ModelSerializer):
+#class EpisodeCommentThreadSerializer(serializers.ModelSerializer):
     #parent = RecursiveField(allow_null=True, many=True)
-    username = serializers.SerializerMethodField()
-    uservote = serializers.SerializerMethodField()
-    class Meta:
-        model = ThreadedComment
-        fields = ('id', 'comment', 'user', 'submit_date', 'parent', 'username', 'is_removed', 'vote_weight', 'uservote')
+#    username = serializers.SerializerMethodField()
+#    uservote = serializers.SerializerMethodField()
+#    class Meta:
+#        model = ThreadedComment
+#        fields = ('id', 'comment', 'user', 'submit_date', 'parent', 'username', 'is_removed', 'vote_weight', 'uservote')
 
-    def get_username(self, obj):
-        return obj.user.username
-    
-    def get_uservote(self, obj):
-        try: 
-            return Vote.objects.get(comment=obj.id, voter_user=obj.user).value
-        except Vote.DoesNotExist:
-            return 0
+#    def get_username(self, obj):
+#        return obj.user.username
+#    
+#    def get_uservote(self, obj):
+#        try: 
+#            return Vote.objects.get(comment=obj.id, voter_user=obj.user).value
+#        except Vote.DoesNotExist:
+#            return 0
         
 
-class EpisodeCommentSerializer(serializers.ModelSerializer):
+#class EpisodeCommentSerializer(serializers.ModelSerializer):
     #parent = RecursiveField(allow_null=True, many=True)
-    class Meta:
-        model = ThreadedComment
-        fields = ('comment', 'parent')
+#    class Meta:
+#        model = ThreadedComment
+#        fields = ('comment', 'parent')
 
-    def create(self, validated_data):
-        ctype = ContentType.objects.get_by_natural_key('podcast', 'episode')
-        validated_data['content_type'] = ctype
-        validated_data['site_id'] = settings.SITE_ID
-        return ThreadedComment.objects.create(**validated_data)
+#    def create(self, validated_data):
+#        ctype = ContentType.objects.get_by_natural_key('podcast', 'episode')
+#        validated_data['content_type'] = ctype
+#        validated_data['site_id'] = settings.SITE_ID
+#        return ThreadedComment.objects.create(**validated_data)
 
 #class EpisodeCommentUpdateSerializer
 
