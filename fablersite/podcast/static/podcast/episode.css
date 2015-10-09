@@ -67,8 +67,22 @@ color: white;
 	font-family: 'Avenir Next', sans-serif;
 	width: 750px;
 	margin: 0 auto;
-	margin-top: 75px;	
-	padding: 5px;
+}
+
+.comment {
+	margin-bottom: 10px;
+}
+
+.comments ul{
+	list-style-type: none;
+}
+
+.comments .comment_info{
+	font-size: 12px;
+}
+
+.comments .comment_footer{
+	font-size: 12px;
 }
 
 input, select, textarea{

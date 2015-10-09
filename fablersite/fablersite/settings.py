@@ -77,8 +77,6 @@ ROOT_URLCONF = 'fablersite.urls'
 ROOT_HOSTCONF = 'fablersite.hosts'
 DEFAULT_HOST = 'www'
 
-SITE_ID = '1'
-
 # If running on Amazon session cookies should be on fablersite-dev, otherwise run local test.com. Note to user, make sure your /etc/hosts has a mapping from test.com to 127.0.0.1; when calling this url, make sure you use test.com:8000
 if 'RDS_DB_NAME' in os.environ:
     SESSION_COOKIE_DOMAIN = '.fablersite-dev.elasticbeanstalk.com'
