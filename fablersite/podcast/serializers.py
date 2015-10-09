@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from rest_framework_recursive.fields import RecursiveField
-from podcast.models import Podcast, Episode, Publisher, Vote
-from threadedcomments.models import ThreadedComment
+from podcast.models import Podcast, Episode, Publisher
 
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings

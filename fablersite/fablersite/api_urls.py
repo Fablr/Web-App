@@ -60,8 +60,6 @@ router.register(r'userprofile', UserProfileViewSet)
 router.register(r'podcast', PodcastViewSet)
 router.register(r'episode', EpisodeViewSet)
 router.register(r'publisher', PublisherViewSet)
-router.add_api_view("episodethread",  url('^episodethread/$', views.EpisodeThreadList.as_view(), name='episode-thread'))
-router.add_api_view("episodecomment",  url('^episodecomment/$', views.EpisodeCommentsDetail.as_view(), name='episode-detail'))
 #router.register(r'comment', CommentViewSet)
 #router.register(r'threadedcomments', ThreadedCommentViewSet)
 
@@ -73,9 +71,6 @@ urlpatterns = patterns('',
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^admin/', include(admin.site.urls)),
     url('', include('social.apps.django_app.urls', namespace='social')),
-    url('^episodethread/(?P<pk>[0-9]+)/$', views.EpisodeThreadList.as_view()),
-    url('^episodecomments/(?P<pk>[0-9]+)/$', views.EpisodeCommentsDetail.as_view(), name='episode-comments'),
-    url('^vote/$', views.VoteDetail.as_view(), name='vote'),
     url(r'^(?P<backend>[^/]+)/$', register_by_access_token),
 )
 

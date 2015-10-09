@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from authentication.models import UserProfile
-from django_comments.models import Comment
 
 # first we define the serializers
 class UserSerializer(serializers.ModelSerializer):
@@ -38,10 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
 
 class UserProfileSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='pk', read_only=True)

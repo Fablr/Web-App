@@ -5,8 +5,7 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.utils import timezone
 
-from podcast.models import Podcast, Publisher, Episode, Vote
-from threadedcomments.models import ThreadedComment
+from podcast.models import Podcast, Publisher, Episode
 from podcast.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 import django_filters
