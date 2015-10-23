@@ -72,6 +72,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url('', include('social.apps.django_app.urls', namespace='social')),
     # enables comments on episodes, podcasts, and publishers so far
+    url(r'^vote/$', VoteDetail.as_view(), name='vote_detail'),
     url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/parent_(?P<parent_id>[0-9]+)/$', CommentsDetail.as_view(), name='comment_detail_with_parent'),
     url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', CommentsDetail.as_view(), name='comment_detail'), 
     url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view(), name='thread_list'),
