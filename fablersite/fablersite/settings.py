@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_hosts',
     'corsheaders',
+    'threaded_comments',
     # 'drf_chaos',
     # 'sslserver',
 
@@ -217,7 +218,7 @@ else:
     STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    #os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "static"),
 )
 
 

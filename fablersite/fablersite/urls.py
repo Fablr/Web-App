@@ -20,16 +20,25 @@ admin.autodiscover()
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^', include('podcast.urls', namespace="podcast")),
+    url(r'^.*$', TemplateView.as_view(template_name="index.html")),
+    #url(r'^admin/', include(admin.site.urls)),
+    #url(r'^', include('podcast.urls', namespace="podcast")),
 
     #in-house apps
-    url(r'^registration/', include('authentication.urls', namespace="registration")),
-    url(r'^$', TemplateView.as_view(template_name='status.html')),
+    #url(r'^registration/', include('authentication.urls', namespace="registration")),
+    #url(r'^$', TemplateView.as_view(template_name='status.html')),
     
-    url('^accounts/', include('django.contrib.auth.urls', namespace="accounts")),
-    url('', include('social.apps.django_app.urls', namespace='social')),
-    url('', include('django.contrib.auth.urls', namespace='auth')),
+    #url('^accounts/', include('django.contrib.auth.urls', namespace="accounts")),
+    #url('', include('social.apps.django_app.urls', namespace='social')),
+    #url('', include('django.contrib.auth.urls', namespace='auth')),
     #url(r'^login/', include('login.urls', namespace="login")),
     #url(r'', include(splash.urls)),
 )
+
+#if settings.DEBUG:
+#    urlpatterns += patterns('django.contrib.staticfiles.views',
+#        url(r'', 'serve', {
+#            'document_root': settings.STATIC_ROOT, 
+#            'path': '/base.html'}
+#        ),
+#    )
