@@ -44,6 +44,7 @@ class PodcastFilter(django_filters.FilterSet):
 class EpisodeFilter(django_filters.FilterSet):
     class Meta:
         model = Episode
+        fields = ['podcast']
 
 # Django Rest API
 # ViewSets define the view behavior.

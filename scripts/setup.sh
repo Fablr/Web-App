@@ -16,3 +16,4 @@ pyenv global 3.4.3
 pyenv virtualenv VFABLER_WEB
 pyenv activate VFABLER_WEB
 env CRYPTOGRAPHY_OSX_NO_LINK_FLAGS=1 LDFLAGS="$(brew --prefix openssl)/lib/libssl.a $(brew --prefix openssl)/lib/libcrypto.a" CFLAGS="-I$(brew --prefix openssl)/include" pip install -r requirements.txt
+createdb local_django_fabler
