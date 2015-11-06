@@ -85,11 +85,11 @@ else:
         'test.com:8000',
     )
     
-CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
+#CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
 CORS_ALLOW_CREDENTIALS = True
 
 #Security settings
-#CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 #SESSION_COOKIE_SECURE = True
 #os.environ['wsgi.url_scheme'] = 'https'
 

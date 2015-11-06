@@ -7,7 +7,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from authentication.views import *
 from podcast.views import *
-from threaded_comments.views import *
+#from threaded_comments.views import *
 
 #using a custom router to support both API views and viewsets
 class HybridRouter(routers.DefaultRouter):
@@ -72,10 +72,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url('', include('social.apps.django_app.urls', namespace='social')),
     # enables comments on episodes, podcasts, and publishers so far
-    url(r'^vote/$', VoteDetail.as_view(), name='vote_detail'),
-    url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/parent_(?P<parent_id>[0-9]+)/$', CommentsDetail.as_view(), name='comment_detail_with_parent'),
-    url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', CommentsDetail.as_view(), name='comment_detail'), 
-    url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view(), name='thread_list'),
+    #url(r'^vote/$', VoteDetail.as_view(), name='vote_detail'),
+    #url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/parent_(?P<parent_id>[0-9]+)/$', CommentsDetail.as_view(), name='comment_detail_with_parent'),
+    #url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', CommentsDetail.as_view(), name='comment_detail'),
+    #url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view(), name='thread_list'),
     url(r'^(?P<backend>[^/]+)/$', register_by_access_token),
 )
 
