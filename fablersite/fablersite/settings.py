@@ -170,6 +170,7 @@ else:
 REST_FRAMEWORK = {
     'PAGINATE_BY': 20,
     'MAX_PAGINATE_BY': 20,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
