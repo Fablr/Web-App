@@ -1,0 +1,10 @@
+branch-defaults:
+  default:
+    environment: fablersite-dev
+global:
+  application_name: fablersite
+  default_ec2_keyname: aws-eb
+  default_platform: 64bit Amazon Linux 2015.03 v1.4.3 running Python 3.4
+  default_region: null
+  profile: null
+  sc: null
