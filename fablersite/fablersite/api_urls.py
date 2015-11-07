@@ -60,6 +60,7 @@ router.register(r'userprofile', UserProfileViewSet)
 router.register(r'podcast', PodcastViewSet)
 router.register(r'episode', EpisodeViewSet)
 router.register(r'publisher', PublisherViewSet)
+router.register(r'subscription', SubscriptionViewSet)
 #router.register(r'comment', CommentViewSet)
 #router.register(r'threadedcomments', ThreadedCommentViewSet)
 
@@ -78,4 +79,3 @@ urlpatterns = patterns('',
     #url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view(), name='thread_list'),
     url(r'^(?P<backend>[^/]+)/$', register_by_access_token),
 )
-

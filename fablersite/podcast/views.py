@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.utils import timezone
 
-from podcast.models import Podcast, Publisher, Episode
+from podcast.models import Podcast, Publisher, Episode, Subscription
 from podcast.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 import django_filters
@@ -33,6 +33,9 @@ class PodcastDetailView(generic.DetailView):
 class EpisodeDetailView(generic.DetailView):
     model = Episode
 
+class SubscriptionDetailView(generic.DetailView):
+    model = Subscription
+
 class PublisherFilter(django_filters.FilterSet):
     class Meta:
         model = Publisher
@@ -45,6 +48,11 @@ class EpisodeFilter(django_filters.FilterSet):
     class Meta:
         model = Episode
         fields = ['podcast']
+
+class SubscriptionFilter(django_filters.FilterSet):
+    class Meta:
+        model=Subscription
+        fields = ['podcast', 'user']
 
 # Django Rest API
 # ViewSets define the view behavior.
@@ -59,10 +67,18 @@ class PublisherViewSet(viewsets.ModelViewSet):
     serializer_class = PublisherSerializer
     filter_class = PublisherFilter
 
+
 class EpisodeViewSet(viewsets.ModelViewSet):
     queryset = Episode.objects.all()
     serializer_class = EpisodeSerializer
     filter_class = EpisodeFilter
+
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+    filter_class = SubscriptionFilter
+
 
 #class CommentViewSet(viewsets.ModelViewSet):
 #    queryset = ThreadedComment.objects.exclude(parent__isnull=False)
@@ -73,7 +89,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #        if pk is None:
 #            votes = Vote.objects.all()
 #            serializer = VoteSerializer(votes, many=True)
-#            return Response(serializer.data)            
+#            return Response(serializer.data)
 #        else:
 #            votes = Vote.objects.get(id=pk)
 #            serializer = VoteSerializer(votes, many=True)
@@ -82,10 +98,10 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #    def post(self, request, format=None):
 #        serializer = VoteSerializer(data=request.data)
 #        if serializer.is_valid():
-#            # Using episode id, update comment's vote weight 
+#            # Using episode id, update comment's vote weight
 #            comment_id = ThreadedComment.objects.get(pk=request.data['comment'])
 #            # If vote already exists update existing vote to reflect new value
-#            try: 
+#            try:
 #                vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
 #                comment_id.vote_weight = comment_id.vote_weight - vote.value
 #                vote.value = int(request.data['value'])
@@ -96,7 +112,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #            except Vote.DoesNotExist:
 #                vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
 #            comment_id.vote_weight = comment_id.vote_weight + int(request.data['value'])
-#            comment_id.save()            
+#            comment_id.save()
 #            return Response(serializer.data, status=status.HTTP_201_CREATED)
 #        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 #
@@ -106,7 +122,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #
 #class EpisodeThreadList(APIView):
 #    def get_object(self, pk):
-#        try: 
+#        try:
 #            return ThreadedComment.objects.all()
 #        except ThreadedComment.DoesNotExist:
 #            raise Http404
@@ -114,7 +130,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #        if pk is None:
 #            comments = ThreadedComment.objects.all()
 #            serializer = EpisodeCommentThreadSerializer(comments, many=True)
-#            return Response(serializer.data)            
+#            return Response(serializer.data)
 #        else:
 #            comments = ThreadedComment.objects.filter(object_pk=pk)
 #            serializer = EpisodeCommentThreadSerializer(comments, many=True)
@@ -123,7 +139,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #
 #class EpisodeCommentsDetail(APIView):
 #    def get_object(self, pk):
-#        try: 
+#        try:
 #            return ThreadedComment.objects.filter(object_pk=pk)
 #        except ThreadedComment.DoesNotExist:
 #            raise Http404
@@ -131,7 +147,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #        if pk is None:
 #            comments = ThreadedComment.objects.all()
 #            serializer = EpisodeCommentThreadSerializer(comments, many=True)
-#            return Response(serializer.data)            
+#            return Response(serializer.data)
 #        else:
 #            comments = ThreadedComment.objects.get(id=pk)
 #            serializer = EpisodeCommentThreadSerializer(comments, many=True)
@@ -146,7 +162,7 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #            vote.save()
 #            serializer = EpisodeCommentThreadSerializer(comment)
 #            return Response(serializer.data, status=status.HTTP_201_CREATED)
-#        
+#
 #        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 #
 #    def delete(self, request, pk):
@@ -157,6 +173,4 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 #        return Response(status=status.HTTP_204_NO_CONTENT)
 
     #def update(self, request, pk):
-        #comment = 
-
-
+        #comment =
