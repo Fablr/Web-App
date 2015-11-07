@@ -79,8 +79,12 @@ class Subscription(models.Model):
     podcast = models.ForeignKey(Podcast, related_name='subscription')
     user = models.ForeignKey(User, related_name='subscription')
     active = models.BooleanField(default=True)
+
     def __str__(self):
         return self.title
+
+    class Meta:
+        unique_together = ('podcast', 'user',)
 
 
 # class EpisodeTimeline(models.Model)
