@@ -16,6 +16,15 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions, mixins, generics, status
 from rest_framework.reverse import reverse
 
+@api_view(['GET'])
+def current_subscriptions(request):
+    """
+    Returns Podcasts the current user is subscribed to.
+    """
+    podcasts = Podcast.objects.filter(pk__in = [x.podcast for x in Subscription.objects.filter(user=request.user)])
+    serializer = PodcastSerializer(podcasts, many=True)
+    return Response(serializer.data)
+
 class PublisherDetailView(generic.DetailView):
     model = Publisher
     def get_context_data(self, *args, **kwargs):
