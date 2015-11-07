@@ -21,7 +21,7 @@ def current_subscriptions(request):
     """
     Returns Podcasts the current user is subscribed to.
     """
-    podcasts = Podcast.objects.filter(pk__in = [x.podcast.pk for x in Subscription.objects.filter(user=request.user)])
+    podcasts = [x.podcast for x in Subscription.objects.filter(user=request.user)]
     serializer = PodcastSerializer(podcasts, many=True, context={'request': request})
     return Response(serializer.data)
 
