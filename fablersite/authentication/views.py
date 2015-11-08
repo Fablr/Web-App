@@ -79,7 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST'
+        return (permissions.AllowAny() if self.request.method == 'POST' or self.request.method == 'GET'
                 else IsStaffOrTargetUser()),
 
     @list_route()
