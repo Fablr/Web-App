@@ -5,6 +5,7 @@ from podcast.models import Podcast, Episode, Publisher, Subscription
 
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.core.exceptions import *
 
 # first we define the serializers
 class PublisherSerializer(serializers.ModelSerializer):
@@ -12,9 +13,23 @@ class PublisherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publisher
 
+
 class PodcastSerializer(serializers.ModelSerializer):
     #publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')
     episode = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='episode-detail')
+    subscribed = serializers.SerializerMethodField()
+
+    def get_subscribed(self, podcast):
+        subscribed = False
+        request = self.context.get('request', None)
+        if request is not None:
+            try:
+                subscription = Subscription.objects.get(podcast=podcast.pk, user=request.user)
+                subscribed = subscription.active
+            except ObjectDoesNotExist:
+                subscribed = False
+        return subscribed
+
     class Meta:
         model = Podcast
 
