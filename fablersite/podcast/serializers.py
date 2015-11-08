@@ -27,8 +27,11 @@ class EpisodeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+    active = serializers.BooleanField(default=True)
     class Meta:
         model = Subscription
+        fields = ('podcast', 'user', 'active')
 
 #class VoteSerializer(serializers.ModelSerializer):
 #    class Meta:

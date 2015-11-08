@@ -10,20 +10,12 @@ from podcast.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 import django_filters
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, list_route
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, mixins, generics, status
 from rest_framework.reverse import reverse
 
-@api_view(['GET'])
-def current_subscriptions(request):
-    """
-    Returns Podcasts the current user is subscribed to.
-    """
-    podcasts = [x.podcast for x in Subscription.objects.filter(user=request.user)]
-    serializer = PodcastSerializer(podcasts, many=True, context={'request': request})
-    return Response(serializer.data)
 
 class PublisherDetailView(generic.DetailView):
     model = Publisher
@@ -70,6 +62,12 @@ class PodcastViewSet(viewsets.ModelViewSet):
     serializer_class = PodcastSerializer
     filter_class = PodcastFilter
 
+    @list_route()
+    def subscribed(self, serializer):
+        podcasts = [x.podcast for x in Subscription.objects.filter(user=self.request.user, active=True)]
+        serializer = PodcastSerializer(podcasts, many=True, context={'request': self.request})
+        return Response(serializer.data)
+
 
 class PublisherViewSet(viewsets.ModelViewSet):
     queryset = Publisher.objects.all()
@@ -87,6 +85,9 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
     filter_class = SubscriptionFilter
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 #class CommentViewSet(viewsets.ModelViewSet):
