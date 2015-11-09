@@ -86,9 +86,13 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
     serializer_class = SubscriptionSerializer
     filter_class = SubscriptionFilter
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
+    def get_object(self):
+        if self.request.method == 'PUT' or self.request.method == 'POST':
+            podcast = Podcast.objects.get(id=self.request.data['podcast'])
+            instance, created = Subscription.objects.get_or_create(podcast=podcast, user=self.request.user)
+            return instance
+        else:
+            return super(SubscriptionViewSet, self).get_object()
 
 #class CommentViewSet(viewsets.ModelViewSet):
 #    queryset = ThreadedComment.objects.exclude(parent__isnull=False)

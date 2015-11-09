@@ -76,8 +76,8 @@ class Subscription(models.Model):
     """
     Model for Subscription of Podcasts
     """
-    podcast = models.ForeignKey(Podcast, related_name='subscription')
-    user = models.ForeignKey(User, related_name='subscription')
+    podcast = models.ForeignKey(Podcast, related_name='subscriptionPodcast')
+    user = models.ForeignKey(User, related_name='subscriptionUser')
     active = models.BooleanField(default=True)
 
     def __str__(self):
