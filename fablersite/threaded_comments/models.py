@@ -105,10 +105,3 @@ class Vote(models.Model):
        )
     class Meta:
         unique_together = ("voter_user", "comment")
-
- 
-#local_django_fabler=# SELECT * FROM django_comment_flags;
-# id | flag | flag_date | comment_id | user_id 
-#----+------+-----------+------------+---------
-#(0 rows)
-   
