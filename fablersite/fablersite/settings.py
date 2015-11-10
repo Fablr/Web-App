@@ -48,7 +48,7 @@ INSTALLED_APPS = (
     # 'drf_chaos',
     # 'sslserver',
 
-    
+
     # in-house apps
     # 'splash',
     'authentication',
@@ -78,19 +78,19 @@ if 'RDS_DB_NAME' in os.environ:
     SESSION_COOKIE_DOMAIN = '.fablersite-dev.elasticbeanstalk.com'
     CORS_ORIGIN_WHITELIST = (
         'fablersite-dev.elasticbeanstalk.com',
-    )   
+    )
 else:
     SESSION_COOKIE_DOMAIN = '.test.com'
     CORS_ORIGIN_WHITELIST = (
         'test.com:8000',
         'test.com:5555',
     )
-    
-CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
+
+#CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
 CORS_ALLOW_CREDENTIALS = True
 
 #Security settings
-#CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 #SESSION_COOKIE_SECURE = True
 #os.environ['wsgi.url_scheme'] = 'https'
 
@@ -153,7 +153,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'local_django_fabler',
-            'USER': os.environ['USER'], 
+            'USER': os.environ['USER'],
             'PASSWORD': '',
             'HOST': '127.0.0.1',
             'PORT': '5432',
@@ -162,7 +162,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'ebdb',
             'USER': 'dreplogle',
-            'PASSWORD': os.environ['AWSPASSWORD'], 
+            'PASSWORD': os.environ['AWSPASSWORD'],
             'HOST': 'aa1rr2xlfemsxmo.cp4q3xdsxtdz.us-west-2.rds.amazonaws.com',
             'PORT': '5432',
         }
@@ -171,6 +171,7 @@ else:
 REST_FRAMEWORK = {
     'PAGINATE_BY': 20,
     'MAX_PAGINATE_BY': 20,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -218,10 +219,6 @@ if 'RDS_DB_NAME' in os.environ:
 else:
     STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
-
 
 #REMOVE THIS AFTER UPDATING DJANGO-REGISTRATION-REDUX TO 1.3
 import logging, copy
@@ -229,7 +226,7 @@ from django.utils.log import DEFAULT_LOGGING
 
 LOGGING = copy.deepcopy(DEFAULT_LOGGING)
 LOGGING['filters']['suppress_deprecated'] = {
-    '()': 'fablersite.settings.SuppressDeprecated'  
+    '()': 'fablersite.settings.SuppressDeprecated'
 }
 LOGGING['handlers']['console']['filters'].append('suppress_deprecated')
 

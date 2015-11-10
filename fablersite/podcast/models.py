@@ -15,10 +15,7 @@ class Publisher(models.Model):
     name = models.CharField(max_length=255, blank=True, unique=True)
     users = models.ManyToManyField(User, blank=True)
     comments = GenericRelation(Comment)
-    #slug = models.SlugField(unique=True)
-    #@models.permalink
-    #def get_absolute_url(self):
-    #    return 'podcast:publisher', (self.slug,)
+
     def __str__(self):
         return self.name
 
@@ -40,13 +37,9 @@ class Podcast(models.Model):
     complete = models.BooleanField(default=False)
     keywords = models.CharField(max_length=100, blank=True)
     comments = GenericRelation(Comment)
-    #slug = models.SlugField(unique=True)
-    #@models.permalink
-    #def get_absolute_url(self):
-    #    return 'podcast:podcast', (self.slug,)
+
     def __str__(self):
         return self.title
-    # image = FieleField(max_length=255)
 
 
 class Episode(models.Model):
@@ -64,12 +57,24 @@ class Episode(models.Model):
     keywords = models.CharField(max_length=100, blank=True)
     explicit = models.CharField(max_length=255, blank=True)
     comments = GenericRelation(Comment)
-    #slug = models.SlugField(unique=True)
-    #@models.permalink
-    #def get_absolute_url(self):
-    #    return 'podcast:episode', (self.slug,)
+
     def __str__(self):
         return self.title
+
+
+class Subscription(models.Model):
+    """
+    Model for Subscription of Podcasts
+    """
+    podcast = models.ForeignKey(Podcast, related_name='subscriptionPodcast')
+    user = models.ForeignKey(User, related_name='subscriptionUser')
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        unique_together = ('podcast', 'user',)
 
 
 # class EpisodeTimeline(models.Model)

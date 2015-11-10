@@ -11,6 +11,8 @@ from authentication.forms import UserCreateForm
 from authentication.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 
+from rest_framework.decorators import list_route
+from rest_framework.response import Response
 from django.http import HttpResponse
 from django.contrib.auth import login
 from social.apps.django_app.utils import psa
@@ -27,13 +29,13 @@ def home(request):
 
 
 # When we send a third party access token to that view
-# as a GET request with access_token parameter, 
+# as a GET request with access_token parameter,
 # python social auth communicate with
 # the third party and request the user info to register or
 # sign in the user. Magic. Yeah.
 @psa('social:complete')
 def register_by_access_token(request, backend):
- 
+
     token = request.GET.get('access_token')
     # here comes the magic
     user = request.backend.do_auth(token)
@@ -77,8 +79,14 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST'
+        return (permissions.AllowAny() if self.request.method == 'POST' or self.request.method == 'GET'
                 else IsStaffOrTargetUser()),
+
+    @list_route()
+    def current(self, serializer):
+        user = self.request.user
+        serializer = UserSerializer(user, many=False, context={'request': self.request})
+        return Response(serializer.data)
 
 class GroupViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
@@ -99,7 +107,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 #
 #class SignUp(generics.CreateAPIView):
 #    '''
-#    Signup view for API with oauth 
+#    Signup view for API with oauth
 #    '''
 #    queryset = User.objects.all()
 #    serializer_class = SignUpSerializer
@@ -111,7 +119,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 #    '''
 #    queryset = User.objects.all()
 #    serializer_class = LoginSerializer
-    
+
     #BasicAuthentication needs to change to SessionAuthentication or some other variant
 #    authentication_classes = (BasicAuthentication,)
 

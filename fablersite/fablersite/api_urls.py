@@ -9,7 +9,6 @@ from authentication.views import *
 from podcast.views import *
 from threaded_comments.views import *
 
-#using a custom router to support both API views and viewsets
 class HybridRouter(routers.DefaultRouter):
     def __init__(self, *args, **kwargs):
         super(HybridRouter, self).__init__(*args, **kwargs)
@@ -52,6 +51,7 @@ class HybridRouter(routers.DefaultRouter):
 
         return APIRoot.as_view()
 
+
 # Routers provide an easy way of automatically determining the URL conf
 router = HybridRouter()
 router.register(r'users', UserViewSet)
@@ -61,6 +61,7 @@ router.register(r'podcast', PodcastViewSet)
 router.register(r'episode', EpisodeViewSet)
 router.register(r'publisher', PublisherViewSet)
 router.register(r'commentflag', CommentFlagViewSet)
+router.register(r'subscription', SubscriptionViewSet)
 #router.register(r'comment', CommentViewSet)
 #router.register(r'threadedcomments', ThreadedCommentViewSet)
 
@@ -80,4 +81,3 @@ urlpatterns = patterns('',
     url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view(), name='thread_list'),
     url(r'^(?P<backend>[^/]+)/$', register_by_access_token),
 )
-
