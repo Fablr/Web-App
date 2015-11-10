@@ -24,6 +24,7 @@ class PublisherFilter(django_filters.FilterSet):
 class PodcastFilter(django_filters.FilterSet):
     class Meta:
         model = Podcast
+        fields = ['publisher']
 
 
 class EpisodeFilter(django_filters.FilterSet):

@@ -7,17 +7,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.exceptions import *
 
-# first we define the serializers
 class PublisherSerializer(serializers.ModelSerializer):
-    podcast = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='podcast-detail')
     class Meta:
         model = Publisher
 
 
 class PodcastSerializer(serializers.ModelSerializer):
-    #publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')
-    episode = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='episode-detail')
     subscribed = serializers.SerializerMethodField()
+    publisherName = serializers.SerializerMethodField()
 
     def get_subscribed(self, podcast):
         subscribed = False
@@ -27,27 +24,28 @@ class PodcastSerializer(serializers.ModelSerializer):
                 subscription = Subscription.objects.get(podcast=podcast.pk, user=request.user)
                 subscribed = subscription.active
             except ObjectDoesNotExist:
-                subscribed = False
+                pass
         return subscribed
+
+    def get_publisherName(self, podcast):
+        return podcast.publisher.name
 
     class Meta:
         model = Podcast
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
-    #podcast = serializers.HyperlinkedRelatedField(read_only=True, view_name='podcast-detail')
-    #publisher = serializers.HyperlinkedRelatedField(read_only=True, view_name='publisher-detail')
     class Meta:
         model = Episode
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
-    active = serializers.BooleanField(default=True)
 
     class Meta:
         model = Subscription
         fields = ('podcast', 'user', 'active')
+
 
 #class VoteSerializer(serializers.ModelSerializer):
 #    class Meta:
