@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, mixins, generics, status
 from rest_framework.reverse import reverse
+from rest_framework import status
 
 
 class PublisherDetailView(generic.DetailView):
@@ -24,6 +25,7 @@ class PublisherDetailView(generic.DetailView):
         context['podcast_list'] = Podcast.objects.filter(publisher=self.kwargs['pk'])
         return context
 
+
 class PodcastDetailView(generic.DetailView):
     model = Podcast
     def get_context_data(self, *args, **kwargs):
@@ -31,37 +33,45 @@ class PodcastDetailView(generic.DetailView):
         context['episode_list'] = Episode.objects.filter(podcast=self.kwargs['pk'])
         return context
 
+
 class EpisodeDetailView(generic.DetailView):
     model = Episode
 
+
 class SubscriptionDetailView(generic.DetailView):
     model = Subscription
+
 
 class PublisherFilter(django_filters.FilterSet):
     class Meta:
         model = Publisher
 
+
 class PodcastFilter(django_filters.FilterSet):
     class Meta:
         model = Podcast
+
 
 class EpisodeFilter(django_filters.FilterSet):
     class Meta:
         model = Episode
         fields = ['podcast']
 
+
 class SubscriptionFilter(django_filters.FilterSet):
     class Meta:
         model=Subscription
         fields = ['podcast', 'user']
 
-# Django Rest API
-# ViewSets define the view behavior.
+
 class PodcastViewSet(viewsets.ModelViewSet):
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
     filter_class = PodcastFilter
 
+    """
+    Retrieve subscribed podcasts for current user.
+    """
     @list_route()
     def subscribed(self, serializer):
         podcasts = [x.podcast for x in Subscription.objects.filter(user=self.request.user, active=True)]
@@ -85,14 +95,60 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
     filter_class = SubscriptionFilter
+    lookup_field = 'podcast'
 
     def get_object(self):
-        if self.request.method == 'PUT' or self.request.method == 'POST':
-            podcast = Podcast.objects.get(id=self.request.data['podcast'])
-            instance, created = Subscription.objects.get_or_create(podcast=podcast, user=self.request.user)
-            return instance
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        if 'user' in self.request.data:
+            user = User.objects.get(id=request.data['user'])
         else:
-            return super(SubscriptionViewSet, self).get_object()
+            user = self.request.user
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg], 'user': user}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+    """
+    Create a model instance.
+    """
+    def create(self, request, *args, **kwargs):
+        assert 'podcast' in request.data, (
+            'Missing Podcast field in requests data.'
+        )
+
+        try:
+            if 'user' in request.data:
+                user = User.objects.get(id=request.data['user'])
+            else:
+                user = self.request.user
+            podcast = Podcast.objects.get(id=request.data['podcast'])
+            instance, created = Subscription.objects.get_or_create(podcast=podcast, user=user)
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            if created:
+                op = status.HTTP_201_CREATED
+            else:
+                op = status.HTTP_200_OK
+            return Response(serializer.data, status=op, headers=headers)
+        except ObjectDoesNotExist:
+            raise Http404
+
 
 #class CommentViewSet(viewsets.ModelViewSet):
 #    queryset = ThreadedComment.objects.exclude(parent__isnull=False)
