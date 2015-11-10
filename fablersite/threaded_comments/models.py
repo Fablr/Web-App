@@ -58,7 +58,7 @@ class Comment(models.Model):
         #verbose_name = _('Threaded comment')
         #verbose_name_plural = _('Threaded comments')
 
-class CommentFlag(models.Model):
+class Comment_Flag(models.Model):
     """
     Records a flag on a comment. This is intentionally flexible; right now, a
     flag could be:
@@ -79,7 +79,6 @@ class CommentFlag(models.Model):
     MODERATOR_APPROVAL = "moderator approval"
 
     class Meta:
-        db_table = 'django_comment_flags'
         unique_together = [('user', 'comment', 'flag')]
         verbose_name = _('comment flag')
         verbose_name_plural = _('comment flags')
@@ -106,3 +105,10 @@ class Vote(models.Model):
        )
     class Meta:
         unique_together = ("voter_user", "comment")
+
+ 
+#local_django_fabler=# SELECT * FROM django_comment_flags;
+# id | flag | flag_date | comment_id | user_id 
+#----+------+-----------+------------+---------
+#(0 rows)
+   

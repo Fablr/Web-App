@@ -4,7 +4,7 @@ from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 
 
-from threaded_comments.models import Comment, CommentFlag, Vote
+from threaded_comments.models import Comment, Comment_Flag, Vote
 from threaded_comments.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 
@@ -12,29 +12,29 @@ from podcast.models import Podcast, Episode, Publisher
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions, mixins, generics, status
+from rest_framework import authentication, permissions, mixins, generics, viewsets, status
 
- class VoteDetail(APIView):
-     def post(self, request, format=None):
-         serializer = VoteSerializer(data=request.data)
-         if serializer.is_valid():
-             # Using episode id, update comment's vote weight 
-             comment_id = Comment.objects.get(pk=request.data['comment'])
-             # If vote already exists update existing vote to reflect new value
-             try: 
-                 vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
-                 comment_id.net_vote = comment_id.net_vote - vote.value
-                 vote.value = int(request.data['value'])
-                 if vote.value == 0:
-                     vote.delete()
-                 else:
-                     vote.save()
-             except Vote.DoesNotExist:
-                 vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
-             comment_id.net_vote = comment_id.net_vote + int(request.data['value'])
-             comment_id.save()            
-             return Response(serializer.data, status=status.HTTP_201_CREATED)
-         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class VoteDetail(APIView):
+    def post(self, request, format=None):
+        serializer = VoteSerializer(data=request.data)
+        if serializer.is_valid():
+            # Using episode id, update comment's vote weight 
+            comment_id = Comment.objects.get(pk=request.data['comment'])
+            # If vote already exists update existing vote to reflect new value
+            try: 
+                vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
+                comment_id.net_vote = comment_id.net_vote - vote.value
+                vote.value = int(request.data['value'])
+                if vote.value == 0:
+                    vote.delete()
+                else:
+                    vote.save()
+            except Vote.DoesNotExist:
+                vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
+            comment_id.net_vote = comment_id.net_vote + int(request.data['value'])
+            comment_id.save()            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
 class ThreadList(APIView):
     def get_object(self, pk):
@@ -53,7 +53,7 @@ class ThreadList(APIView):
         return Response(serializer.data)
 
 
-class CommentsDetail(APIView):
+class CommentDetail(APIView):
     def post(self, request, object_type, object_id, parent_id=None, format=None):
         serializer = CommentSerializer(data=request.data)
         try:
@@ -84,12 +84,6 @@ class CommentsDetail(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    #def delete(self, request, pk):
-    #    comment = Comment.objects.get(pk=pk)
-    #    comment.delete()
-    #    queryset = Vote.objects.filter(comment_id=pk)
-    #    queryset.delete()
-    #    return Response(status=status.HTTP_204_NO_CONTENT)
-
-    #def update(self, request, pk):
-        #comment = 
+class CommentFlagViewSet(viewsets.ModelViewSet):
+    queryset = Comment_Flag.objects.all()
+    serializer_class = CommentFlagSerializer 

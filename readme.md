@@ -1,10 +1,15 @@
 # API Paths
 
-# Create User
+# Register User through Fabler
 api.fabler.fm/users/
 **HTTP Methods**: POST
 
 **Required Fields:** username, email, password
+
+# Register User through Facebook
+api.fabler.fm/[backend]/?access_token=[access_token]
+
+**HTTP Methods**: POST
 
 # Retrieve comment thread 
 api.fabler.fm/threadlist/episode_[object_id]
@@ -55,3 +60,5 @@ api.fabler.fm/vote/
 **HTTP Methods**: POST
 
 **Required Fields:** value, comment
+
+

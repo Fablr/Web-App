@@ -83,6 +83,7 @@ else:
     SESSION_COOKIE_DOMAIN = '.test.com'
     CORS_ORIGIN_WHITELIST = (
         'test.com:8000',
+        'test.com:5555',
     )
     
 CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN

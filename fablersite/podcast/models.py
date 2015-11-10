@@ -59,7 +59,7 @@ class Episode(models.Model):
     subtitle = models.CharField(max_length=255, blank=True)
     description = models.TextField(max_length=4000, blank=True)
     blocked = models.BooleanField(default=False)
-    pubdate = models.DateTimeField(null=True)
+    pubdate = models.DateTimeField(null=False, blank=False)
     duration = models.DurationField(null=True)
     keywords = models.CharField(max_length=100, blank=True)
     explicit = models.CharField(max_length=255, blank=True)
