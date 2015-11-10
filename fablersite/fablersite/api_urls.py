@@ -9,7 +9,6 @@ from authentication.views import *
 from podcast.views import *
 #from threaded_comments.views import *
 
-#using a custom router to support both API views and viewsets
 class HybridRouter(routers.DefaultRouter):
     def __init__(self, *args, **kwargs):
         super(HybridRouter, self).__init__(*args, **kwargs)

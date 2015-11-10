@@ -15,32 +15,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, mixins, generics, status
 from rest_framework.reverse import reverse
-from rest_framework import status
-
-
-class PublisherDetailView(generic.DetailView):
-    model = Publisher
-    def get_context_data(self, *args, **kwargs):
-        context = super(PublisherDetailView, self).get_context_data(*args, **kwargs)
-        context['podcast_list'] = Podcast.objects.filter(publisher=self.kwargs['pk'])
-        return context
-
-
-class PodcastDetailView(generic.DetailView):
-    model = Podcast
-    def get_context_data(self, *args, **kwargs):
-        context = super(PodcastDetailView, self).get_context_data(*args, **kwargs)
-        context['episode_list'] = Episode.objects.filter(podcast=self.kwargs['pk'])
-        return context
-
-
-class EpisodeDetailView(generic.DetailView):
-    model = Episode
-
-
-class SubscriptionDetailView(generic.DetailView):
-    model = Subscription
-
 
 class PublisherFilter(django_filters.FilterSet):
     class Meta:
