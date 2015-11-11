@@ -57,7 +57,7 @@ class Episode(models.Model):
     pubdate = models.DateTimeField(null=False, blank=True, default=timezone.now())
     duration = models.DurationField(null=False, blank=True, default='0d 0:00:02')
     keywords = models.CharField(max_length=100, blank=True)
-    explicit = models.CharField(max_length=255, blank=True)
+    explicit = models.BooleanField(default=False)
     comments = GenericRelation(Comment)
 
     def __str__(self):
