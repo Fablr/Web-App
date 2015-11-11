@@ -214,7 +214,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 if 'RDS_DB_NAME' in os.environ:
-    STATIC_ROOT = os.path.join(BASE_DIR, "www", "static")
+    STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
     STATIC_URL = '/static/'
 else:
     STATIC_URL = '/static/'
