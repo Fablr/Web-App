@@ -6,6 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.contenttypes.fields import GenericRelation
 from threaded_comments.models import Comment
+from django.utils import timezone
+
 
 class Publisher(models.Model):
     """
@@ -52,8 +54,8 @@ class Episode(models.Model):
     subtitle = models.CharField(max_length=255, blank=True)
     description = models.TextField(max_length=4000, blank=True)
     blocked = models.BooleanField(default=False)
-    pubdate = models.DateTimeField(null=True, blank=True)
-    duration = models.DurationField(null=True)
+    pubdate = models.DateTimeField(null=False, blank=True, default=timezone.now())
+    duration = models.DurationField(null=False, blank=True, default='0d 0:00:02')
     keywords = models.CharField(max_length=100, blank=True)
     explicit = models.CharField(max_length=255, blank=True)
     comments = GenericRelation(Comment)
