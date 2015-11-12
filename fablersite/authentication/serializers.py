@@ -4,6 +4,12 @@ from authentication.models import UserProfile
 
 # first we define the serializers
 class UserSerializer(serializers.ModelSerializer):
+    currentUser = serializers.SerializerMethodField()
+
+    def get_currentUser(self, user):
+        request = self.context.get('request', None)
+        return (request.user == user)
+
     class Meta:
         model = User
         write_only_fields = ['password']
@@ -48,7 +54,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'username', 'email', 'first_name', 'last_name', 'city', 'state_province', 
+            'id', 'username', 'email', 'first_name', 'last_name', 'city', 'state_province',
         )
 
     def restore_object(self, attrs, instance=None):
