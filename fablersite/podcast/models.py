@@ -16,6 +16,7 @@ class Publisher(models.Model):
     email = models.EmailField(blank=True)
     name = models.CharField(max_length=255, blank=True, unique=True)
     users = models.ManyToManyField(User, blank=True)
+    image = models.URLField(max_length=255, blank=True, default='')
     comments = GenericRelation(Comment)
 
     def __str__(self):
@@ -33,6 +34,7 @@ class Podcast(models.Model):
     category = models.CharField(max_length=255, blank=True)
     explicit = models.BooleanField(default=False)
     link = models.URLField(max_length=255, blank=True)
+    image = models.URLField(max_length=255, blank=True, default='')
     language = models.CharField(max_length=255, blank=True)
     copyright = models.CharField(max_length=255, blank=True)
     blocked = models.BooleanField(default=False)
@@ -54,7 +56,7 @@ class Episode(models.Model):
     subtitle = models.CharField(max_length=255, blank=True)
     description = models.TextField(max_length=4000, blank=True)
     blocked = models.BooleanField(default=False)
-    pubdate = models.DateTimeField(null=False, blank=True, default=timezone.now())
+    pubdate = models.DateTimeField(null=False, blank=True, default=timezone.now)
     duration = models.DurationField(null=False, blank=True, default='0d 0:00:02')
     keywords = models.CharField(max_length=100, blank=True)
     explicit = models.BooleanField(default=False)
