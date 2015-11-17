@@ -6,6 +6,9 @@ from podcast.models import Podcast, Episode, Publisher, Subscription, EpisodeRec
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.exceptions import *
+from django.utils.duration import duration_string
+
+import datetime
 
 class PublisherSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,6 +38,31 @@ class PodcastSerializer(serializers.ModelSerializer):
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
+    mark = serializers.SerializerMethodField()
+    completed = serializers.SerializerMethodField()
+
+    def get_mark(self, episode):
+        mark = duration_string(datetime.timedelta(seconds=0))
+        request = self.context.get('request', None)
+        if request is not None:
+            try:
+                receipt = EpisodeReceipt.objects.get(episode=episode.pk, user=request.user)
+                mark = duration_string(receipt.mark)
+            except ObjectDoesNotExist:
+                pass
+        return mark
+
+    def get_completed(self, episode):
+        completed = False
+        request = self.context.get('request', None)
+        if request is not None:
+            try:
+                receipt = EpisodeReceipt.objects.get(episode=episode.pk, user=request.user)
+                completed = receipt.completed
+            except ObjectDoesNotExist:
+                pass
+        return completed
+
     class Meta:
         model = Episode
 
