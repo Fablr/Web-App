@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
 from django.db import transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
 COMMENT_MAX_LENGTH = getattr(settings, 'COMMENT_MAX_LENGTH', 10000)
 
@@ -43,8 +44,7 @@ class Comment(models.Model):
                                                  'A "This comment has been removed" message will '
                                                  'be displayed instead.'))
    
-    # Here we're using Materialized Path to save ordering of comments
-    path = ArrayField(models.IntegerField(), editable=False, blank=True, null=False)
+    parent = models.PositiveIntegerField(blank=True, null=True)
     net_vote = models.IntegerField(blank=False, null=False)
 
     @transaction.atomic 
@@ -53,10 +53,8 @@ class Comment(models.Model):
             self.submit_date = timezone.now()
         super(Comment, self).save(*args, **kwargs)
 
-    class Meta(object):
-        ordering = ('path', )
-        #verbose_name = _('Threaded comment')
-        #verbose_name_plural = _('Threaded comments')
+    def __str__(self):
+        return str(self.pk)
 
 class Comment_Flag(models.Model):
     """

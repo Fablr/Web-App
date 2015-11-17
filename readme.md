@@ -12,53 +12,18 @@ api.fabler.fm/[backend]/?access_token=[access_token]
 **HTTP Methods**: POST
 
 # Retrieve comment thread 
-api.fabler.fm/threadlist/episode_[object_id]
+api.fabler.fm/[episode|podcast|publisher]/[object_id]/get_comments/
+
+**HTTP Methods**: POST
 
 # Post Comments
-<h2> Post comment onto an episode </h2>
-api.fabler.fm/postcomment/episode_[object_id]
-
-**HTTP Methods**: POST
+api.fabler.fm/[episode|podcast|publisher]/[object_id]/post_comments/
 
 **Required Fields:** comment
 
-api.fabler.fm/postcomment/episode_[object_id]/parent_[parent_id]
-
-**HTTP Methods**: POST
-
-**Required Fields:** comment
-
-<h2> Post comment onto a Publisher </h2>
-api.fabler.fm/postcomment/publisher_[object_id]
-
-**HTTP Methods**: POST
-
-**Required Fields:** comment
-
-api.fabler.fm/postcomment/publisher_[object_id]/parent_[parent_id]
-
-**HTTP Methods**: POST
-
-**Required Fields:** comment
-
-<h2> Post comment onto a Podcast </h2>
-api.fabler.fm/postcomment/podcast_[object_id]
-
-**HTTP Methods**: POST
-
-**Required Fields:** comment
-
-api.fabler.fm/postcomment/podcast_[object_id]/parent_[parent_id]
-
-**HTTP Methods**: POST
-
-**Required Fields:** comment
+**Optional Fields:** parent
 
 # Vote
 api.fabler.fm/vote/
 
-**HTTP Methods**: POST
-
 **Required Fields:** value, comment
-
-

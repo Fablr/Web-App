@@ -62,6 +62,9 @@ router.register(r'episode', EpisodeViewSet)
 router.register(r'publisher', PublisherViewSet)
 router.register(r'commentflag', CommentFlagViewSet)
 router.register(r'subscription', SubscriptionViewSet)
+router.register(r'comment', CommentViewSet)
+router.register(r'vote', VoteViewSet)
+#router.add_api_view("api-view", url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view()))
 #router.register(r'comment', CommentViewSet)
 #router.register(r'threadedcomments', ThreadedCommentViewSet)
 
@@ -73,11 +76,6 @@ urlpatterns = patterns('',
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^admin/', include(admin.site.urls)),
     url('', include('social.apps.django_app.urls', namespace='social')),
-    # POST votes
-    url(r'^vote/$', VoteDetail.as_view(), name='vote_detail'),
     # enables comments on episodes, podcasts, and publishers so far
-    url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/parent_(?P<parent_id>[0-9]+)/$', CommentDetail.as_view(), name='comment_detail_with_parent'),
-    url(r'^postcomment/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', CommentDetail.as_view(), name='comment_detail'), 
-    url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view(), name='thread_list'),
     url(r'^(?P<backend>[^/]+)/$', register_by_access_token),
 )

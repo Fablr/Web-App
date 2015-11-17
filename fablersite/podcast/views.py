@@ -1,4 +1,3 @@
-from rest_framework import generics, viewsets, permissions
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -7,13 +6,16 @@ from django.utils import timezone
 
 from podcast.models import Podcast, Publisher, Episode, Subscription
 from podcast.serializers import *
+from podcast.mixins import *
+
 from authentication.permissions import IsStaffOrTargetUser
+
 import django_filters
 
 from rest_framework.decorators import api_view, list_route
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions, mixins, generics, status
+from rest_framework import authentication, permissions, mixins, generics, status, viewsets
 from rest_framework.reverse import reverse
 
 class PublisherFilter(django_filters.FilterSet):
@@ -39,14 +41,10 @@ class SubscriptionFilter(django_filters.FilterSet):
         fields = ['podcast', 'user']
 
 
-class PodcastViewSet(viewsets.ModelViewSet):
+class PodcastViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
     filter_class = PodcastFilter
-
-    """
-    Retrieve subscribed podcasts for current user.
-    """
     @list_route()
     def subscribed(self, serializer):
         podcasts = [x.podcast for x in Subscription.objects.filter(user=self.request.user, active=True)]
@@ -54,19 +52,22 @@ class PodcastViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class PublisherViewSet(viewsets.ModelViewSet):
+class PublisherViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
     filter_class = PublisherFilter
 
 
-class EpisodeViewSet(viewsets.ModelViewSet):
+class EpisodeViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Episode.objects.all()
     serializer_class = EpisodeSerializer
     filter_class = EpisodeFilter
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
+    """
+    Retrieve subscribed podcasts for current user.
+    """
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
     filter_class = SubscriptionFilter
@@ -123,6 +124,8 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=op, headers=headers)
         except ObjectDoesNotExist:
             raise Http404
+
+
 
 
 #class CommentViewSet(viewsets.ModelViewSet):
