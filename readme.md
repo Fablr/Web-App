@@ -2,6 +2,7 @@
 
 # Register User through Fabler
 api.fabler.fm/users/
+
 **HTTP Methods**: POST
 
 **Required Fields:** username, email, password
