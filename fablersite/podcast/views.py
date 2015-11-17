@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.utils import timezone
 
-from podcast.models import Podcast, Publisher, Episode, Subscription
+from podcast.models import Podcast, Publisher, Episode, Subscription, EpisodeReceipt
 from podcast.serializers import *
 from podcast.mixins import *
 
@@ -41,6 +41,12 @@ class SubscriptionFilter(django_filters.FilterSet):
         fields = ['podcast', 'user']
 
 
+class EpisodeReceiptFilter(django_filters.FilterSet):
+    class Meta:
+        model=EpisodeReceipt
+        fields = ['episode', 'user']
+
+
 class PodcastViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
@@ -65,9 +71,6 @@ class EpisodeViewSet(viewsets.ModelViewSet, CommentMixin):
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
-    """
-    Retrieve subscribed podcasts for current user.
-    """
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
     filter_class = SubscriptionFilter
@@ -126,6 +129,63 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             raise Http404
 
 
+class EpisodeReceiptViewSet(viewsets.ModelViewSet):
+    queryset = EpisodeReceipt.objects.all()
+    serializer_class = EpisodeReceiptSerializer
+    filter_class = EpisodeReceiptFilter
+    lookup_field = 'episode'
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        if 'user' in self.request.data:
+            user = User.objects.get(id=request.data['user'])
+        else:
+            user = self.request.user
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg], 'user': user}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+    """
+    Create a model instance.
+    """
+    def create(self, request, *args, **kwargs):
+        assert 'episode' in request.data, (
+            'Missing Episode field in requests data.'
+        )
+
+        try:
+            if 'user' in request.data:
+                user = User.objects.get(id=request.data['user'])
+            else:
+                user = self.request.user
+            episode = Episode.objects.get(id=request.data['episode'])
+            instance, created = EpisodeReceipt.objects.get_or_create(episode=episode, user=user)
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            if created:
+                op = status.HTTP_201_CREATED
+            else:
+                op = status.HTTP_200_OK
+            return Response(serializer.data, status=op, headers=headers)
+        except ObjectDoesNotExist:
+            raise Http404
 
 
 #class CommentViewSet(viewsets.ModelViewSet):

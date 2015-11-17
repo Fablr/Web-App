@@ -90,7 +90,7 @@ else:
 CORS_ALLOW_CREDENTIALS = True
 
 #Security settings
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 #os.environ['wsgi.url_scheme'] = 'https'
 

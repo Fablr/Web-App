@@ -68,17 +68,32 @@ class Episode(models.Model):
 
 class Subscription(models.Model):
     """
-    Model for Subscription of Podcasts
+    Model for Subscription to Podcasts by Users
     """
     podcast = models.ForeignKey(Podcast, related_name='subscriptionPodcast')
     user = models.ForeignKey(User, related_name='subscriptionUser')
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return '{}, {}: {}'.format(podcast, user, active)
 
     class Meta:
         unique_together = ('podcast', 'user',)
+
+class EpisodeReceipt(models.Model):
+    """
+    Model for listening state of Episodes by Users
+    """
+    episode = models.ForeignKey(Episode, related_name='receiptEpisode')
+    user = models.ForeignKey(User, related_name='receiptUser')
+    mark = models.DurationField(null=False, blank=True, default='0d 0:00:02')
+    completed = models.BooleanField(null=False, blank=True, default=False)
+
+    def __str__(self):
+        return '{}, {}: {}, {}'.format(episode, user, time, completed)
+
+    class Meta:
+        unique_together = ('episode', 'user',)
 
 
 # class EpisodeTimeline(models.Model)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from rest_framework_recursive.fields import RecursiveField
-from podcast.models import Podcast, Episode, Publisher, Subscription
+from podcast.models import Podcast, Episode, Publisher, Subscription, EpisodeReceipt
 
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -45,6 +45,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ('podcast', 'user', 'active')
+
+class EpisodeReceiptSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = EpisodeReceipt
 
 
 #class VoteSerializer(serializers.ModelSerializer):
