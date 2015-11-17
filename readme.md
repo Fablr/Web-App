@@ -3,22 +3,24 @@
 # Register User through Fabler
 api.fabler.fm/users/
 
-**HTTP Methods**: POST
+**HTTP Methods:** POST
 
 **Required Fields:** username, email, password
 
 # Register User through Facebook
-api.fabler.fm/[backend]/?access_token=[access_token]
+[POST] api.fabler.fm/[backend]/?access_token=[access_token]
 
-**HTTP Methods**: POST
+**HTTP Methods:** POST
 
-# Retrieve comment thread 
-api.fabler.fm/[episode|podcast|publisher]/[object_id]/get_comments/
+# Retrieve comment thread
+api.fabler.fm/[episode|podcast|publisher]/[object_id]/comments/
 
-**HTTP Methods**: POST
+**HTTP Methods:** GET
 
 # Post Comments
-api.fabler.fm/[episode|podcast|publisher]/[object_id]/post_comments/
+api.fabler.fm/[episode|podcast|publisher]/[object_id]/comments/
+
+**HTTP Methods:** POST
 
 **Required Fields:** comment
 

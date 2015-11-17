@@ -13,7 +13,7 @@ class CommentMixin(object):
     Also posts comments associated with a particular model.
     """
     @detail_route(methods=['get'])
-    def get_comments(self, request, pk):
+    def comments(self, request, pk):
         # Access class name of the class we're serializing (podcast, episode, publisher, etc.)
         # For some reason, it has to be in lower case to find the ContentType, which is why there's a .lower()
         ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
@@ -22,11 +22,11 @@ class CommentMixin(object):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @detail_route(methods=['post'])
-    def post_comments(self, request, pk):
+    def comments(self, request, pk):
         serializer = CommentSerializer(data=request.data)
         ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
         if serializer.is_valid():
-            comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype, 
+            comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype,
                         submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], net_vote=1)
             comment.save()
             print(comment.pk)
@@ -35,5 +35,3 @@ class CommentMixin(object):
             serializer = CommentThreadSerializer(comment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
