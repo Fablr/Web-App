@@ -175,6 +175,8 @@ class EpisodeReceiptViewSet(viewsets.ModelViewSet):
                 user = self.request.user
             episode = Episode.objects.get(id=request.data['episode'])
             instance, created = EpisodeReceipt.objects.get_or_create(episode=episode, user=user)
+            if instance.completed:
+                request.data['completed'] = True
             serializer = self.get_serializer(instance, data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
