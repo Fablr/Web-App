@@ -18,12 +18,12 @@ class CommentSerializer(serializers.ModelSerializer):
     """
     Accepts comments that can be returned through CommentThreadSerializer
     """
-    parent = serializers.IntegerField(required=False)
+    path = serializers.IntegerField(required=False)
     class Meta:
         model = Comment
-        fields = ('comment', 'parent')
+        fields = ('comment', 'path')
 
-    def validate_parent(self, value):
+    def validate_path(self, value):
         """
         Validate that parent does not have it's own parent value
         """
@@ -32,7 +32,7 @@ class CommentSerializer(serializers.ModelSerializer):
                 parent_comment = Comment.objects.get(pk=value)
             except ObjectDoesNotExist:
                 raise serializers.ValidationError("Parent comment does not exist")
-            if parent_comment.parent is not None:
+            if len(parent_comment.path) is not 1:
                 raise serializers.ValidationError("Parent comment already has a parent")
         return value
 
@@ -44,7 +44,7 @@ class CommentThreadSerializer(serializers.ModelSerializer):
     uservote = serializers.SerializerMethodField()
     class Meta:
         model = Comment
-        fields = ('id', 'comment', 'user', 'submit_date', 'user_name', 'is_removed', 'net_vote', 'uservote', 'parent')
+        fields = ('id', 'comment', 'user', 'submit_date', 'user_name', 'is_removed', 'net_vote', 'uservote', 'path')
 
     def get_uservote(self, obj):
         try: 

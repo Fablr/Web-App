@@ -5,7 +5,7 @@ from threaded_comments.models import Comment
 from threaded_comments.serializers import *
 from rest_framework import authentication, permissions, mixins, generics, viewsets, status
 from django.utils import timezone
-
+from django.contrib.postgres.fields import ArrayField
 
 class CommentMixin(object):
     """
@@ -25,7 +25,13 @@ class CommentMixin(object):
             serializer = CommentSerializer(data=request.data)
             ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
             if serializer.is_valid():
-                comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], net_vote=1)
+                if('path' in request.data):
+                    parent_comment = Comment.objects.get(pk=request.data['path'], content_type=ctype)
+                    comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], net_vote=1, path=parent_comment.path)
+                    comment.path.append(comment.id)
+                else:
+                    comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], net_vote=1, path=[0, ])
+                    comment.path = [comment.id, ]
                 comment.save()
                 vote = Vote(voter_user=request.user, voted_user=request.user, comment=comment, value=1, vote_time=timezone.now())
                 vote.save()

@@ -43,8 +43,8 @@ class Comment(models.Model):
                                      help_text=_('Check this box if the comment is inappropriate. '
                                                  'A "This comment has been removed" message will '
                                                  'be displayed instead.'))
-   
-    parent = models.PositiveIntegerField(blank=True, null=True)
+    path = ArrayField(models.PositiveIntegerField(), editable=False, blank=True, null=False, size=2)  
+    #path = models.PositiveIntegerField(blank=True, null=False, default=0)
     net_vote = models.IntegerField(blank=False, null=False)
 
     @transaction.atomic 
@@ -55,6 +55,9 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+    class Meta(object):
+       ordering = ('path', )
 
 class Comment_Flag(models.Model):
     """
