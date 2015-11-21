@@ -19,9 +19,13 @@ class CommentMixin(object):
             # For some reason, it has to be in lower case to find the ContentType, which is why there's a .lower()
             ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
             comments = Comment.objects.filter(content_type=ctype, object_pk=pk)
+            for comment in comments:
+                if comment.is_removed is True:
+                    comment.comment = "Has been removed"
+                    comment.user_name = "[Removed]"
             serializer = CommentThreadSerializer(comments, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
+        elif self.request.method == 'POST':
             serializer = CommentSerializer(data=request.data)
             ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
             if serializer.is_valid():
@@ -38,3 +42,10 @@ class CommentMixin(object):
                 serializer = CommentThreadSerializer(comment)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # NEED PERMISSIONS HERE
+        # elif self.request.method == 'DELETE':
+        #    comment = Comment.objects.get(pk=pk)
+        #    comment.is_removed = True
+        #    return Response()
+
+
