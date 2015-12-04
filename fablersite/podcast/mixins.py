@@ -24,13 +24,13 @@ class CommentMixin(object):
                     comment.comment = "Has been removed"
                     comment.user_name = "[Removed]"
             serializer = CommentThreadSerializer(comments, many=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         elif self.request.method == 'POST':
             serializer = CommentSerializer(data=request.data)
             ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
             if serializer.is_valid():
-                if('path' in request.data):
-                    parent_comment = Comment.objects.get(pk=request.data['path'], content_type=ctype)
+                if('parent' in request.data):
+                    parent_comment = Comment.objects.get(pk=request.data['parent'], content_type=ctype)
                     comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], net_vote=1, path=parent_comment.path)
                     comment.path.append(comment.id)
                 else:
@@ -42,10 +42,10 @@ class CommentMixin(object):
                 serializer = CommentThreadSerializer(comment)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         # NEED PERMISSIONS HERE
         # elif self.request.method == 'DELETE':
         #    comment = Comment.objects.get(pk=pk)
         #    comment.is_removed = True
         #    return Response()
-
-

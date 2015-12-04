@@ -8,7 +8,7 @@ from django.core.exceptions import *
 
 class VoteSerializer(serializers.ModelSerializer):
     """
-    Vote serializer 
+    Vote serializer
     """
     class Meta:
         model = Vote
@@ -28,7 +28,7 @@ class CommentSerializer(serializers.ModelSerializer):
         Validate that parent does not have it's own parent value
         """
         if value is not None:
-            try: 
+            try:
                 parent_comment = Comment.objects.get(pk=value)
             except ObjectDoesNotExist:
                 raise serializers.ValidationError("Parent comment does not exist")
@@ -41,16 +41,26 @@ class CommentThreadSerializer(serializers.ModelSerializer):
     """
     Returns serialized Comment
     """
-    uservote = serializers.SerializerMethodField()
+    user_vote = serializers.SerializerMethodField()
+    parent = serializers.SerializerMethodField()
     class Meta:
         model = Comment
-        fields = ('id', 'comment', 'user', 'submit_date', 'user_name', 'is_removed', 'net_vote', 'uservote', 'path')
+        fields = ('id', 'comment', 'user', 'submit_date', 'edited_date', 'user_name', 'net_vote', 'user_vote', 'parent')
 
-    def get_uservote(self, obj):
-        try: 
-            return Vote.objects.get(comment=obj.id, voter_user=obj.user).value
-        except Vote.DoesNotExist:
+    def get_user_vote(self, obj):
+        try:
+            request = self.context.get('request', None)
+            if request is None:
+                raise ObjectDoesNotExist
+            return Vote.objects.get(comment=obj.id, voter_user=request.user).value
+        except ObjectDoesNotExist:
             return 0
+
+    def get_parent(self, obj):
+        index = len(obj.path) - 2
+        if index < 0:
+            return None
+        return obj.path[index]
 
 class CommentViewSerializer(serializers.ModelSerializer):
     """
