@@ -23,7 +23,7 @@ class CommentMixin(object):
                 if comment.is_removed is True:
                     comment.comment = "Has been removed"
                     comment.user_name = "[Removed]"
-            serializer = CommentThreadSerializer(comments, many=True)
+            serializer = CommentThreadSerializer(comments, many=True, context={'request': self.request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif self.request.method == 'POST':
             serializer = CommentSerializer(data=request.data)
