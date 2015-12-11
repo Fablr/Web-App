@@ -12,7 +12,7 @@ class VoteSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Vote
-        fields = ('value', 'comment')
+        fields = ('value', 'comment', 'voter_user', 'voted_user', 'vote_time')
 
 class CommentSerializer(serializers.ModelSerializer):
     """

@@ -14,40 +14,56 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, mixins, generics, viewsets, status
 
-class CommentViewSet(mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   viewsets.GenericViewSet):
+class CommentViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentViewSerializer
 
 class CommentFlagViewSet(viewsets.ModelViewSet):
     queryset = Comment_Flag.objects.all()
-    serializer_class = CommentFlagSerializer 
+    serializer_class = CommentFlagSerializer
 
-class VoteViewSet(viewsets.ModelViewSet):
+class VoteFilter(django_filters.FilterSet):
+    class Meta:
+        model=Vote
+        fields = ['voter_user', 'voted_user', 'comment']
+
+class VoteViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
+    filter_class = VoteFilter
 
     def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            # Using episode id, update comment's vote weight 
-            comment_id = Comment.objects.get(pk=request.data['comment'])
-            # If vote already exists update existing vote to reflect new value
-            try: 
-                vote = Vote.objects.get(comment=comment_id, voter_user=request.user)
-                comment_id.net_vote = comment_id.net_vote - vote.value
-                vote.value = int(request.data['value'])
-                if vote.value == 0:
-                    vote.delete()
-                else:
-                    vote.save()
-            except Vote.DoesNotExist:
-                vote = serializer.save(voter_user=request.user, voted_user=comment_id.user, vote_time=timezone.now())
-            comment_id.net_vote = comment_id.net_vote + int(request.data['value'])
-            comment_id.save()            
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        assert 'comment' in request.data, (
+            'Missing required field \'comment\''
+        )
 
+        assert 'voted_user' not in request.data, (
+            'Field \'voted_user\' is read-only'
+        )
+
+        try:
+            if 'voter_user' in request.data:
+                # TODO limit to admins
+                voter_user = User.objects.get(pk=request.data['voter_user'])
+            else:
+                voter_user = self.request.user
+            comment = Comment.objects.get(pk=request.data['comment'])
+            instance, created = Vote.objects.get_or_create(comment=comment, voter_user=voter_user, voted_user=comment.user)
+            comment.net_vote = comment.net_vote - instance.value
+            serializer = self.get_serializer(instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            value = int(request.data['value'])
+            if value == 0:
+                op = status.HTTP_200_OK
+            else:
+                comment.net_vote = comment.net_vote + value
+                comment.save()
+                self.perform_create(serializer)
+                if created:
+                    op = status.HTTP_201_CREATED
+                else:
+                    op = status.HTTP_200_OK
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=op, headers=headers)
+        except ObjectDoesNotExist:
+            raise Http404
