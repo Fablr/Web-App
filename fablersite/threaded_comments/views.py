@@ -48,12 +48,14 @@ class VoteViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Gener
             else:
                 voter_user = self.request.user
             comment = Comment.objects.get(pk=request.data['comment'])
-            instance, created = Vote.objects.get_or_create(comment=comment, voter_user=voter_user, voted_user=comment.user)
+            instance, created = Vote.objects.get_or_create(comment=comment, voter_user=voter_user, voted_user=comment.user, defaults={'value': 0, 'vote_time': timezone.now()})
             comment.net_vote = comment.net_vote - instance.value
             serializer = self.get_serializer(instance, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             value = int(request.data['value'])
             if value == 0:
+                comment.save()
+                instance.delete()
                 op = status.HTTP_200_OK
             else:
                 comment.net_vote = comment.net_vote + value
