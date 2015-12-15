@@ -45,7 +45,7 @@ class CommentThreadSerializer(serializers.ModelSerializer):
     parent = serializers.SerializerMethodField()
     class Meta:
         model = Comment
-        fields = ('id', 'comment', 'user', 'submit_date', 'edited_date', 'user_name', 'net_vote', 'user_vote', 'parent')
+        fields = ('id', 'comment', 'user', 'submit_date', 'edited_date', 'user_name', 'net_vote', 'user_vote', 'parent', 'is_removed')
 
     def get_user_vote(self, obj):
         try:
