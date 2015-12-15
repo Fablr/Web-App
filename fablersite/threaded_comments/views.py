@@ -22,7 +22,7 @@ class CommentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
             comment = Comment.objects.get(id=pk)
-            comment.edited_date = timezone.now();
+            comment.edited_date = timezone.now()
             comment.comment = serializer.data['comment']
             comment.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
