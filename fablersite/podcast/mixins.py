@@ -21,7 +21,7 @@ class CommentMixin(object):
             comments = Comment.objects.filter(content_type=ctype, object_pk=pk)
             for comment in comments:
                 if comment.is_removed is True:
-                    comment.comment = "Has been removed"
+                    comment.comment = "[Removed]"
                     comment.user_name = "[Removed]"
             serializer = CommentThreadSerializer(comments, many=True, context={'request': self.request})
             return Response(serializer.data, status=status.HTTP_200_OK)
