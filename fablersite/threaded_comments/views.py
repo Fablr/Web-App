@@ -14,9 +14,27 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, mixins, generics, viewsets, status
 
-class CommentViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class CommentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentViewSerializer
+
+    def update(self, request, pk, *args, **kwargs):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            comment = Comment.objects.get(id=pk)
+            comment.edited_date = timezone.now();
+            comment.comment = serializer.data['comment']
+            comment.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk, *args, **kwargs):
+        comment = Comment.objects.get(id=pk)
+        comment.is_removed = True
+        comment.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 class CommentFlagViewSet(viewsets.ModelViewSet):
     queryset = Comment_Flag.objects.all()
