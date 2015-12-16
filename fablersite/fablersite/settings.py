@@ -85,6 +85,7 @@ else:
         'test.com:8000',
         'test.com:5555',
         'test.com:8080',
+        'http://ec2-54-218-65-165.us-west-2.compute.amazonaws.com:5555',
     )
 
 #CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
