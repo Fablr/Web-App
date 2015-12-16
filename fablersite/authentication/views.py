@@ -4,7 +4,7 @@ from django import forms
 from django.views.generic.edit import CreateView
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group
-from rest_framework import generics, viewsets, permissions
+from rest_framework import generics, viewsets, permissions, mixins
 
 from authentication.models import UserProfile
 from authentication.forms import UserCreateForm
@@ -89,7 +89,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-class UserProfileViewSet(viewsets.ModelViewSet):
+class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
