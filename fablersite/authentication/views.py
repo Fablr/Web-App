@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django import forms
 from django.views.generic.edit import CreateView
@@ -35,7 +35,6 @@ def home(request):
 # sign in the user. Magic. Yeah.
 @psa('social:complete')
 def register_by_access_token(request, backend):
-
     token = request.GET.get('access_token')
     # here comes the magic
     user = request.backend.do_auth(token)
@@ -62,17 +61,12 @@ class RegistrationView(CreateView):
         #form.send_email()
         return super(RegistrationView, self).form_valid(form)
 
-
-
 class UserFilter(django_filters.FilterSet):
     class Meta:
         model = User
         fields = ['id']
 
-# Django Rest API
-# ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     permission_classes = [permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -90,39 +84,19 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class GroupViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
     permission_classes = [permissions.IsAuthenticated]
     required_scopes = ['groups']
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
 class UserProfileViewSet(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated, TokenHasScope]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
-
-
-#from permissions import IsAuthenticatedOrCreate
-#from rest_framework.authentication import BasicAuthentication
-#
-#class SignUp(generics.CreateAPIView):
-#    '''
-#    Signup view for API with oauth
-#    '''
-#    queryset = User.objects.all()
-#    serializer_class = SignUpSerializer
-#    permission_classes = (IsAuthenticatedOrCreate,)
-
-#class Login(generics.ListAPIView):
-#    '''
-#    Login view for API with oauth
-#    '''
-#    queryset = User.objects.all()
-#    serializer_class = LoginSerializer
-
-    #BasicAuthentication needs to change to SessionAuthentication or some other variant
-#    authentication_classes = (BasicAuthentication,)
-
-#    def get_queryset(self):
-#        return [self.request.user]
+    @list_route()
+    def current(self, serializer):
+        user = self.request.user
+        queryset = self.filter_queryset(self.get_queryset())
+        profile = get_object_or_404(queryset, pk=user.pk)
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)

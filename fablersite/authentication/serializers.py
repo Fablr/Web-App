@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from authentication.models import UserProfile
 
-# first we define the serializers
 class UserSerializer(serializers.ModelSerializer):
     currentUser = serializers.SerializerMethodField()
 
@@ -50,17 +49,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
+    currentUser = serializers.SerializerMethodField()
+
+    def get_currentUser(self, profile):
+        request = self.context.get('request', None)
+        return (request.user.pk == profile.pk)
 
     class Meta:
         model = UserProfile
-        fields = (
-            'id', 'username', 'email', 'first_name', 'last_name', 'city', 'state_province',
-        )
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'city', 'state_province', 'image', 'currentUser')
 
     def restore_object(self, attrs, instance=None):
-        profile = super(UserProfileSerializer, self).restore_object(
-            attrs, instance
-        )
+        profile = super(UserProfileSerializer, self).restore_object(attrs, instance)
 
         if profile:
             user = profile.user
