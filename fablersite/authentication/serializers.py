@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from authentication.models import UserProfile
 
-# first we define the serializers
 class UserSerializer(serializers.ModelSerializer):
     currentUser = serializers.SerializerMethodField()
 
@@ -50,25 +49,22 @@ class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
+    currentUser = serializers.SerializerMethodField()
+
+    def get_currentUser(self, profile):
+        request = self.context.get('request', None)
+        return (request.user.pk == profile.pk)
 
     class Meta:
         model = UserProfile
-        fields = (
-            'id', 'username', 'email', 'first_name', 'last_name', 'city', 'state_province',
-        )
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'currentUser', 'birthday', 'city', 'state_province', 'image')
 
-    def restore_object(self, attrs, instance=None):
-        profile = super(UserProfileSerializer, self).restore_object(
-            attrs, instance
-        )
-
-        if profile:
-            user = profile.user
-
-            user.email = attrs.get('user.email', user.email)
-            user.first_name = attrs.get('user.first_name', user.first_name)
-            user.last_name = attrs.get('user.last_name', user.last_name)
-
-            user.save()
-
-        return profile
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
+        if user_data is not None:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance

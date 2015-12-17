@@ -51,6 +51,7 @@ class PodcastViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
     filter_class = PodcastFilter
+
     @list_route()
     def subscribed(self, serializer):
         podcasts = [x.podcast for x in Subscription.objects.filter(user=self.request.user, active=True)]
