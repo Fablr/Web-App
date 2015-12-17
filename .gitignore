@@ -45,3 +45,5 @@ Thumbs.db
 !.elasticbeanstalk/*.global.yml
 
 fablersite/fablersite/.swp
+
+.idea/workspace.xml
