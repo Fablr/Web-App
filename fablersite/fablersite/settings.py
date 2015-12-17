@@ -80,12 +80,12 @@ if 'RDS_DB_NAME' in os.environ:
         'fablersite-dev.elasticbeanstalk.com',
     )
 else:
-    SESSION_COOKIE_DOMAIN = '.test.com'
+    SESSION_COOKIE_DOMAIN = '.amazonaws.com'
     CORS_ORIGIN_WHITELIST = (
         'test.com:8000',
         'test.com:5555',
         'test.com:8080',
-        'http://ec2-54-218-65-165.us-west-2.compute.amazonaws.com:5555',
+        'ec2-54-218-65-165.us-west-2.compute.amazonaws.com:5555',
     )
 
 #CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
