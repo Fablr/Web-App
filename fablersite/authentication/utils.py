@@ -4,7 +4,9 @@ from django.http import JsonResponse
 from oauth2_provider.models import AccessToken, Application, RefreshToken
 from django.utils.timezone import now, timedelta, datetime
 import pytz
+import logging
 
+logger = logging.getLogger(__name__)
 
 def get_token_json(access_token):
     """
@@ -41,7 +43,7 @@ def get_access_token(user):
     except:
         try:
             old_access_tokens = AccessToken.objects.all().filter(user=user, application=app)
-            old_refresh_tokens = RefreshToken.objects.all().filter(user=user, access_token=old_access_token)
+            old_refresh_tokens = RefreshToken.objects.all().filter(user=user, access_token=old_access_tokens)
         except:
             # Something's wrong if we get here
             pass
