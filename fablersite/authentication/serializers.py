@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
+from django.core.exceptions import ValidationError as DjangoValidationError
 from authentication.models import UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
@@ -37,18 +38,16 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email must be unique.")
         return attrs
 
-
-
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
 
 class UserProfileSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='pk', read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.CharField(source='user.email')
-    first_name = serializers.CharField(source='user.first_name')
-    last_name = serializers.CharField(source='user.last_name')
+    username = serializers.CharField(source='user.username', required=False)
+    email = serializers.CharField(source='user.email', required=False)
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
     currentUser = serializers.SerializerMethodField()
 
     def get_currentUser(self, profile):
@@ -64,6 +63,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if user_data is not None:
             for attr, value in user_data.items():
                 setattr(instance.user, attr, value)
+            try:
+                instance.user.full_clean()
+            except DjangoValidationError as exc:
+                raise serializers.ValidationError(detail=serializers.get_validation_error_detail(exc))
+            instance.user.save()
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
