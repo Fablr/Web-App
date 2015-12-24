@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     # 'splash',
     'authentication',
     'podcast',
+    'feed',
 )
 
 MIDDLEWARE_CLASSES = (

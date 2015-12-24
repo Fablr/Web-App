@@ -7,6 +7,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from authentication.views import *
 from podcast.views import *
+from feed.views import *
 from threaded_comments.views import *
 
 class HybridRouter(routers.DefaultRouter):
@@ -65,6 +66,7 @@ router.register(r'subscription', SubscriptionViewSet)
 router.register(r'comment', CommentViewSet)
 router.register(r'vote', VoteViewSet)
 router.register(r'episodereceipt', EpisodeReceiptViewSet)
+router.register(r'following', FollowingViewSet)
 #router.add_api_view("api-view", url(r'^threadlist/(?P<object_type>episode|podcast|publisher)_(?P<object_id>[0-9]+)/$', ThreadList.as_view()))
 #router.register(r'comment', CommentViewSet)
 #router.register(r'threadedcomments', ThreadedCommentViewSet)

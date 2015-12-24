@@ -63,7 +63,7 @@ def register_by_access_token(request, backend):
 '''
 Deprecated View that should be removed for production.
 '''
-class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.GenericViewSet):
+class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

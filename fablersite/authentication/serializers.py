@@ -81,7 +81,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 setattr(instance.user, attr, value)
             try:
                 instance.user.full_clean()
-                if 'email' is in user_data:
+                if 'email' in user_data:
                     if User.objects.filter(email=instance.email).exclude(pk=instance.pk).count():
                         raise serializers.ValidationError("Field `Email` must be unique.")
             except DjangoValidationError as exc:
