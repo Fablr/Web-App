@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from authentication.models import UserProfile
+
+from feed.models import Following
 
 '''
 Deprecated Serializer that should be removed for production.
@@ -46,14 +49,28 @@ class UserProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
     currentUser = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField()
 
     def get_currentUser(self, profile):
         request = self.context.get('request', None)
         return (request.user.pk == profile.pk)
 
+    def get_following(self, profile):
+        result = False
+        request = self.context.get('request', None)
+        if request is not None:
+            follower = request.user
+            following = profile.user
+            try:
+                instance = Following.objects.get(follower=follower, following=following)
+                result = True
+            except ObjectDoesNotExist:
+                pass
+        return result
+
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'currentUser', 'birthday', 'city', 'state_province', 'image')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'currentUser', 'following', 'birthday', 'city', 'state_province', 'image')
 
     def create(self, attrs, instance=None):
         assert 'username' in attrs, (
