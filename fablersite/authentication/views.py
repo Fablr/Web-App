@@ -11,7 +11,9 @@ from authentication.forms import UserCreateForm
 from authentication.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 
-from rest_framework.decorators import list_route
+from feed.models import Following
+
+from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
 from django.http import HttpResponse
 from django.contrib.auth import login
@@ -27,6 +29,19 @@ def home(request):
    return render_to_response('registration/home.html',
                              context_instance=context)
 
+class RegistrationView(CreateView):
+    '''
+    Outputs RegistrationForm onto registration.html
+    '''
+    template_name = 'registration/registration.html'
+    form_class = UserCreateForm
+    success_url = '/status/'
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        #form.send_email()
+        return super(RegistrationView, self).form_valid(form)
 
 # When we send a third party access token to that view
 # as a GET request with access_token parameter,
@@ -47,35 +62,12 @@ def register_by_access_token(request, backend):
         # If there was an error... you decide what you do here
         return HttpResponse("error")
 
-class RegistrationView(CreateView):
-    '''
-    Outputs RegistrationForm onto registration.html
-    '''
-    template_name = 'registration/registration.html'
-    form_class = UserCreateForm
-    success_url = '/status/'
-
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        #form.send_email()
-        return super(RegistrationView, self).form_valid(form)
-
-class UserFilter(django_filters.FilterSet):
-    class Meta:
-        model = User
-        fields = ['id']
-
-class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+'''
+Deprecated View that should be removed for production.
+'''
+class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    filter_class = UserFilter
-
-    def get_permissions(self):
-        # allow non-authenticated user to create via POST
-        return (permissions.AllowAny() if self.request.method == 'POST' or self.request.method == 'GET'
-                else IsStaffOrTargetUser()),
 
     @list_route()
     def current(self, serializer):
@@ -89,7 +81,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class UserProfileViewSet(mixins.CreateModelMixin , mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
@@ -99,4 +91,22 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mix
         queryset = self.filter_queryset(self.get_queryset())
         profile = get_object_or_404(queryset, pk=user.pk)
         serializer = self.get_serializer(profile)
+        return Response(serializer.data)
+
+    @detail_route(methods=['get'])
+    def followers(self, request, pk):
+        queryset = self.get_queryset()
+        profile = get_object_or_404(queryset, pk=pk)
+        followers_user = Following.objects.filter(following=profile.user).values_list('follower', flat=True)
+        followers_profile = queryset.filter(user__in=followers_user)
+        serializer = self.get_serializer(followers_profile, many=True, context={'request': self.request})
+        return Response(serializer.data)
+
+    @detail_route(methods=['get'])
+    def following(self, request, pk):
+        queryset = self.get_queryset()
+        profile = get_object_or_404(queryset, pk=pk)
+        following_users = Following.objects.filter(follower=profile.user).values_list('following', flat=True)
+        following_profiles = queryset.filter(user__in=following_users)
+        serializer = self.get_serializer(following_profiles, many=True, context={'request': self.request})
         return Response(serializer.data)

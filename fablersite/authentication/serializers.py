@@ -1,14 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
+from django.core.exceptions import ValidationError as DjangoValidationError
 from authentication.models import UserProfile
 
+'''
+Deprecated Serializer that should be removed for production.
+'''
 class UserSerializer(serializers.ModelSerializer):
-    currentUser = serializers.SerializerMethodField()
-
-    def get_currentUser(self, user):
-        request = self.context.get('request', None)
-        return (request.user == user)
-
     class Meta:
         model = User
         write_only_fields = ['password']
@@ -37,18 +35,16 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email must be unique.")
         return attrs
 
-
-
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='pk', read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.CharField(source='user.email')
-    first_name = serializers.CharField(source='user.first_name')
-    last_name = serializers.CharField(source='user.last_name')
+    id = serializers.IntegerField(source='user.pk', read_only=True)
+    username = serializers.CharField(source='user.username', required=False)
+    email = serializers.CharField(source='user.email', required=False)
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
     currentUser = serializers.SerializerMethodField()
 
     def get_currentUser(self, profile):
@@ -59,11 +55,38 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'currentUser', 'birthday', 'city', 'state_province', 'image')
 
+    def create(self, attrs, instance=None):
+        assert 'username' in attrs, (
+            'Missing required field `username`.'
+        )
+
+        assert 'email' in attrs, (
+            'Missing required field `email`.'
+        )
+
+        assert 'password' in attrs, (
+            'Missing required field `password`.'
+        )
+
+        user = User(username=attrs['username'], email=attrs['email'], is_staff=False, is_active=True, is_superuser=False)
+        user.set_password(attrs['password'])
+        user.save()
+        instance = UserProfile.objects.get(user=user)
+        return instance
+
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
         if user_data is not None:
             for attr, value in user_data.items():
                 setattr(instance.user, attr, value)
+            try:
+                instance.user.full_clean()
+                if 'email' in user_data:
+                    if User.objects.filter(email=instance.email).exclude(pk=instance.pk).count():
+                        raise serializers.ValidationError("Field `Email` must be unique.")
+            except DjangoValidationError as exc:
+                raise serializers.ValidationError(detail=serializers.get_validation_error_detail(exc))
+            instance.user.save()
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
