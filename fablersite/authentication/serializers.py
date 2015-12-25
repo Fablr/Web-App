@@ -40,7 +40,7 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='pk', read_only=True)
+    id = serializers.IntegerField(source='user.pk', read_only=True)
     username = serializers.CharField(source='user.username', required=False)
     email = serializers.CharField(source='user.email', required=False)
     first_name = serializers.CharField(source='user.first_name', required=False)
