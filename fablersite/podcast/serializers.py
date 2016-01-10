@@ -24,8 +24,9 @@ class PodcastSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                subscription = Subscription.objects.get(podcast=podcast.pk, user=request.user)
-                subscribed = subscription.active
+                if request.user.is_authenticated():    
+                    subscription = Subscription.objects.get(podcast=podcast.pk, user=request.user)
+                    subscribed = subscription.active
             except ObjectDoesNotExist:
                 pass
         return subscribed
@@ -46,8 +47,9 @@ class EpisodeSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                receipt = EpisodeReceipt.objects.get(episode=episode.pk, user=request.user)
-                mark = duration_string(receipt.mark)
+                if request.user.is_authenticated():
+                    receipt = EpisodeReceipt.objects.get(episode=episode.pk, user=request.user)
+                    mark = duration_string(receipt.mark)
             except ObjectDoesNotExist:
                 pass
         return mark
@@ -57,8 +59,9 @@ class EpisodeSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                receipt = EpisodeReceipt.objects.get(episode=episode.pk, user=request.user)
-                completed = receipt.completed
+                if request.user.is_authenticated():
+                    receipt = EpisodeReceipt.objects.get(episode=episode.pk, user=request.user)
+                    completed = receipt.completed
             except ObjectDoesNotExist:
                 pass
         return completed

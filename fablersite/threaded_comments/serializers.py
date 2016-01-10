@@ -52,7 +52,8 @@ class CommentThreadSerializer(serializers.ModelSerializer):
             request = self.context.get('request', None)
             if request is None:
                 raise ObjectDoesNotExist
-            return Vote.objects.get(comment=obj.id, voter_user=request.user).value
+            if request.user.is_authenticated():
+                return Vote.objects.get(comment=obj.id, voter_user=request.user).value
         except ObjectDoesNotExist:
             return 0
 

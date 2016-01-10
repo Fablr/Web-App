@@ -181,7 +181,7 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         #'oauth2_provider.ext.rest_framework.OAuth2Authentication',
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
         #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
 

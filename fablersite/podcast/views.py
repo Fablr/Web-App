@@ -70,7 +70,6 @@ class EpisodeViewSet(viewsets.ModelViewSet, CommentMixin):
     serializer_class = EpisodeSerializer
     filter_class = EpisodeFilter
 
-
 class SubscriptionViewSet(viewsets.ModelViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
@@ -131,6 +130,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 
 
 class EpisodeReceiptViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = EpisodeReceipt.objects.all()
     serializer_class = EpisodeReceiptSerializer
     filter_class = EpisodeReceiptFilter
