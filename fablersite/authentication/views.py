@@ -12,6 +12,8 @@ from authentication.serializers import *
 from authentication.permissions import IsStaffOrTargetUser
 
 from feed.models import Following
+from podcast.models import Podcast, Subscription
+from podcast.serializers import PodcastSerializer
 
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.response import Response
@@ -109,4 +111,12 @@ class UserProfileViewSet(mixins.CreateModelMixin , mixins.RetrieveModelMixin, mi
         following_users = Following.objects.filter(follower=profile.user).values_list('following', flat=True)
         following_profiles = queryset.filter(user__in=following_users)
         serializer = self.get_serializer(following_profiles, many=True, context={'request': self.request})
+        return Response(serializer.data)
+
+    @detail_route(methods=['get'])
+    def subscribed(self, request, pk):
+        queryset = self.get_queryset()
+        profile = get_object_or_404(queryset, pk=pk)
+        podcasts = [x.podcast for x in Subscription.objects.filter(user=profile.user, active=True)]
+        serializer = PodcastSerializer(podcasts, many=True, context={'request': self.request})
         return Response(serializer.data)
