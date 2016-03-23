@@ -21,7 +21,7 @@ class Following(models.Model):
 
 EVENT_TYPE_CHOICES = (
     ('Listened', 'Listened'),
-    ('Subscribe', 'Subscribed'),
+    ('Subscribed', 'Subscribed'),
     ('Commented', 'Commented'),
     ('Followed', 'Followed'),
 )
@@ -36,4 +36,4 @@ class Event(models.Model):
     info = JSONField()
 
     def __str__(self):
-        return '{} @ {} by {} for {}.{}'.format(event_type, posted_time, user, model_type, model_id)
+        return '{} @ {} by {} for {}.{}'.format(event_type, posted_time, user, content_type, object_id)
