@@ -4,7 +4,7 @@ cement==2.4.0
 cffi==1.1.2
 cryptography==0.9.1
 defusedxml==0.4.1
-Django==1.8.5
+Django==1.9.4
 django-appconf==1.0.1
 django-braces==1.8.0
 django-cors-headers==1.1.0
@@ -12,11 +12,11 @@ django-dual-authentication==1.0.0
 django-durationfield==0.5.2
 django-filter==0.10.0
 django-filters==0.2.1
-django-hosts==1.2
+django-hosts==1.4
 django-mptt==0.7.4
 django-oauth-toolkit==0.8.1
 django-sslserver==0.15
-djangorestframework==3.3.1
+djangorestframework==3.3.3
 djangorestframework-recursive==0.1.1
 docker-py==1.1.0
 dockerpty==0.3.4

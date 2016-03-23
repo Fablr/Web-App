@@ -250,7 +250,7 @@ if 'RDS_DB_NAME' in os.environ:
         'handlers': {
             'null': {
                 'level':'DEBUG',
-                'class':'django.utils.log.NullHandler',
+                'class':'logging.NullHandler',
             },
             'log_file': {
                 'level':'DEBUG',
