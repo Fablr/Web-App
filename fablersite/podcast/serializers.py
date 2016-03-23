@@ -24,7 +24,7 @@ class PodcastSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         if request is not None:
             try:
-                if request.user.is_authenticated():    
+                if request.user.is_authenticated():
                     subscription = Subscription.objects.get(podcast=podcast.pk, user=request.user)
                     subscribed = subscription.active
             except ObjectDoesNotExist:

@@ -71,3 +71,7 @@ class FollowingViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=op, headers=headers)
         except ObjectDoesNotExist:
             raise Http404
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer

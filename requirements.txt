@@ -46,3 +46,4 @@ six==1.9.0
 texttable==0.8.3
 websocket-client==0.32.0
 wrapt==1.10.5
+rest-framework-generic-relations==1.1.0
