@@ -1,20 +1,17 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ObjectDoesNotExist
-from authentication.models import UserProfile
+from rest_framework import serializers
 
+from authentication.models import UserProfile
 from feed.models import Following
 
-'''
-Deprecated Serializer that should be removed for production.
-'''
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         write_only_fields = ['password']
 
-    def create(self, attrs, instance=None):
+    def create(self, attrs):
         user = User(username=attrs['username'], email=attrs['email'], is_staff=False, is_active=True, is_superuser=False)
         user.set_password(attrs['password'])
         user.save()
@@ -53,7 +50,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_currentUser(self, profile):
         request = self.context.get('request', None)
-        return (request.user.pk == profile.pk)
+        return request.user.pk == profile.pk
 
     def get_following(self, profile):
         result = False
@@ -72,7 +69,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'currentUser', 'following', 'birthday', 'city', 'state_province', 'image')
 
-    def create(self, attrs, instance=None):
+    def create(self, attrs):
         assert 'username' in attrs, (
             'Missing required field `username`.'
         )

@@ -1,18 +1,13 @@
-from oauth2_provider.settings import oauth2_settings
-from oauthlib.common import generate_token
 from django.http import JsonResponse
-from oauth2_provider.models import AccessToken, Application, RefreshToken
 from django.utils.timezone import now, timedelta, datetime
+from oauthlib.common import generate_token
+from oauth2_provider.models import AccessToken, Application, RefreshToken
+from oauth2_provider.settings import oauth2_settings
 import pytz
-import logging
-
-logger = logging.getLogger(__name__)
 
 def get_token_json(access_token):
     """
-    Takes an AccessToken instance as an argument
-    and returns a JsonResponse instance from that
-    AccessToken
+    Takes an AccessToken instance as an argument and returns a JsonResponse instance from that AccessToken
     """
     token = {
         'access_token': access_token.token,
@@ -23,14 +18,10 @@ def get_token_json(access_token):
     }
     return JsonResponse(token)
 
-
 def get_access_token(user):
     """
-    Takes a user instance and return an access_token as a JsonResponse
-    instance.
+    Takes a user instance and return an access_token as a JsonResponse instance.
     """
-
-    # our oauth2 app
     app = Application.objects.get(name="Fabler")
 
     # We delete the old access_token and refresh_token
@@ -62,8 +53,7 @@ def get_access_token(user):
     # we generate a refresh token
     refresh_token = generate_token()
 
-    expires = now() + timedelta(seconds=oauth2_settings.
-                                ACCESS_TOKEN_EXPIRE_SECONDS)
+    expires = now() + timedelta(seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
     scope = "read write"
 
     # we create the access token
