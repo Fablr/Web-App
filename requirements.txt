@@ -47,3 +47,4 @@ texttable==0.8.3
 websocket-client==0.32.0
 wrapt==1.10.5
 rest-framework-generic-relations==1.1.0
+django-model-utils==2.4

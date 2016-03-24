@@ -9,6 +9,7 @@ from threaded_comments.models import Comment
 from django.utils import timezone
 from django.db import transaction
 from django.contrib.contenttypes.models import ContentType
+from model_utils import FieldTracker
 
 from feed.models import *
 
@@ -88,9 +89,9 @@ class Subscription(models.Model):
     def save(self, *args, **kwargs):
         if self.active and not self.pk:
             ctype = ContentType.objects.get_for_model(self.podcast)
-            event, created = Event.objects.get_or_create(user=self.user, event_type='Subscribed', content_type=ctype, object_id=self.podcast.id)
-            event.save()
+            event = Event.objects.create(user=self.user, event_type='Subscribed', content_type=ctype, object_id=self.podcast.id)
         super(Subscription, self).save(*args, **kwargs)
+
 
 class EpisodeReceipt(models.Model):
     """
@@ -101,14 +102,17 @@ class EpisodeReceipt(models.Model):
     mark = models.DurationField(null=False, blank=True, default='0d 0:00:02')
     completed = models.BooleanField(null=False, blank=True, default=False)
 
+    tracker = FieldTracker()
+
     def __str__(self):
         return '{}, {}: {}, {}'.format(episode, user, time, completed)
 
     class Meta:
         unique_together = ('episode', 'user',)
 
-
-# class EpisodeTimeline(models.Model)
-
-
-# class EpisodeDiscussion(models.Model)
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        if self.tracker.has_changed('completed') and self.completed:
+            ctype = ContentType.objects.get_for_model(self.episode)
+            event = Event.objects.create(user=self.user, event_type='Listened', content_type=ctype, object_id=self.episode.id)
+        super(EpisodeReceipt, self).save(*args, **kwargs)
