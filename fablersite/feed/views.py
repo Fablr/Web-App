@@ -1,19 +1,13 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
-from django.views import generic
-from django.utils import timezone
-
-from feed.models import *
-from feed.serializers import *
-
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 import django_filters
-
-from rest_framework.decorators import api_view, list_route
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions, mixins, generics, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.reverse import reverse
+
+from feed.models import Following, Event
+from feed.serializers import FollowingSerializer, EventSerializer
+
 
 class FollowingFilter(django_filters.FilterSet):
     class Meta:

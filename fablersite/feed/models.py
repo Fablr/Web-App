@@ -1,23 +1,20 @@
-from django.db import models
-from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import JSONField
 from django.db import transaction
+from django.db import models
+from django.utils import timezone
 
 from authentication.models import UserProfile
 
-try:
-    from django.contrib.contenttypes.fields import GenericForeignKey
-except ImportError:
-    from django.contrib.contenttypes.generic import GenericForeignKey
 
 class Following(models.Model):
     follower = models.ForeignKey(User, related_name='follower')
     following = models.ForeignKey(User, related_name='following')
 
     def __str__(self):
-        return '{}, {}'.format(follower, following)
+        return '{}, {}'.format(self.follower, self.following)
 
     class Meta:
         unique_together = ('follower', 'following')
@@ -32,6 +29,7 @@ class Following(models.Model):
             following_profile = UserProfile.objects.get(pk=self.following.pk)
             ctype = ContentType.objects.get_for_model(following_profile)
             event = Event.objects.create(user=self.follower, event_type='Followed', content_type=ctype, object_id=following_profile.pk)
+
 
 EVENT_TYPE_CHOICES = (
     ('Listened', 'Listened'),
