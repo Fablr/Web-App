@@ -1,18 +1,12 @@
-from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import User
-from durationfield.db.models.fields.duration import DurationField
-from django.utils.translation import ugettext_lazy as _
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.contenttypes.fields import GenericRelation
-from threaded_comments.models import Comment
-from django.utils import timezone
-from django.db import transaction
 from django.contrib.contenttypes.models import ContentType
+from django.db import models, transaction
+from django.utils import timezone
 from model_utils import FieldTracker
 
-from feed.models import *
-
+from feed.models import Event
+from threaded_comments.models import Comment
 
 class Publisher(models.Model):
     """
@@ -26,7 +20,6 @@ class Publisher(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Podcast(models.Model):
     """
@@ -50,7 +43,6 @@ class Podcast(models.Model):
     def __str__(self):
         return self.title
 
-
 class Episode(models.Model):
     """
     Model for episodes of Podcasts
@@ -70,7 +62,6 @@ class Episode(models.Model):
     def __str__(self):
         return self.title
 
-
 class Subscription(models.Model):
     """
     Model for Subscription to Podcasts by Users
@@ -80,7 +71,7 @@ class Subscription(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return '{}, {}: {}'.format(podcast, user, active)
+        return '{}, {}: {}'.format(self.podcast, self.user, self.active)
 
     class Meta:
         unique_together = ('podcast', 'user',)
@@ -91,7 +82,6 @@ class Subscription(models.Model):
             ctype = ContentType.objects.get_for_model(self.podcast)
             event = Event.objects.create(user=self.user, event_type='Subscribed', content_type=ctype, object_id=self.podcast.id)
         super(Subscription, self).save(*args, **kwargs)
-
 
 class EpisodeReceipt(models.Model):
     """
@@ -105,7 +95,7 @@ class EpisodeReceipt(models.Model):
     tracker = FieldTracker()
 
     def __str__(self):
-        return '{}, {}: {}, {}'.format(episode, user, time, completed)
+        return '{}, {}: {}, {}'.format(self.episode, self.user, self.time, self.completed)
 
     class Meta:
         unique_together = ('episode', 'user',)

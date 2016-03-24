@@ -1,18 +1,13 @@
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.utils import timezone
 import django_filters
-from django.http import Http404
-from django.contrib.contenttypes.models import ContentType
-
+from rest_framework.response import Response
+from rest_framework import mixins, viewsets, status
 
 from threaded_comments.models import Comment, Comment_Flag, Vote
-from threaded_comments.serializers import *
-from authentication.permissions import IsStaffOrTargetUser
-
-from podcast.models import Podcast, Episode, Publisher
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import authentication, permissions, mixins, generics, viewsets, status
+from threaded_comments.serializers import CommentViewSerializer, CommentFlagSerializer, VoteSerializer, CommentSerializer
 
 class CommentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Comment.objects.all()
@@ -34,15 +29,13 @@ class CommentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         comment.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-
 class CommentFlagViewSet(viewsets.ModelViewSet):
     queryset = Comment_Flag.objects.all()
     serializer_class = CommentFlagSerializer
 
 class VoteFilter(django_filters.FilterSet):
     class Meta:
-        model=Vote
+        model = Vote
         fields = ['voter_user', 'voted_user', 'comment']
 
 class VoteViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -61,7 +54,6 @@ class VoteViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Gener
 
         try:
             if 'voter_user' in request.data:
-                # TODO limit to admins
                 voter_user = User.objects.get(pk=request.data['voter_user'])
             else:
                 voter_user = self.request.user

@@ -1,16 +1,10 @@
-
-try:
-    from django.contrib.contenttypes.fields import GenericForeignKey
-except ImportError:
-    from django.contrib.contenttypes.generic import GenericForeignKey
-
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
-from django.db import transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models, transaction
+from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from feed.models import Event
@@ -46,7 +40,6 @@ class Comment(models.Model):
                                                  'A "This comment has been removed" message will '
                                                  'be displayed instead.'))
     path = ArrayField(models.PositiveIntegerField(), editable=False, blank=True, null=False, size=2)
-    #path = models.PositiveIntegerField(blank=True, null=False, default=0)
     net_vote = models.IntegerField(blank=False, null=False)
 
     @transaction.atomic
@@ -66,7 +59,7 @@ class Comment(models.Model):
         return str(self.pk)
 
     class Meta(object):
-       ordering = ('path', )
+        ordering = ('path', )
 
 class Comment_Flag(models.Model):
     """
@@ -101,17 +94,13 @@ class Comment_Flag(models.Model):
     def save(self, *args, **kwargs):
         if self.flag_date is None:
             self.flag_date = timezone.now()
-        super(CommentFlag, self).save(*args, **kwargs)
-
-
+        super(Comment_Flag, self).save(*args, **kwargs)
 
 class Vote(models.Model):
     comment = models.ForeignKey(Comment, related_name='commentid')
     voter_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('voter_user'), related_name='voter_user')
     voted_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('voted_user'), related_name='voted_user')
     vote_time = models.DateTimeField(null=False, blank=False)
-    value = models.SmallIntegerField(
-        validators=[MinValueValidator(-1), MaxValueValidator(1)]
-       )
+    value = models.SmallIntegerField(validators=[MinValueValidator(-1), MaxValueValidator(1)])
     class Meta:
         unique_together = ("voter_user", "comment")

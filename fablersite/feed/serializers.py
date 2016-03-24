@@ -10,13 +10,11 @@ from podcast.serializers import PodcastSerializer, EpisodeSerializer
 from threaded_comments.models import Comment
 from threaded_comments.serializers import CommentViewSerializer
 
-
 class FollowingSerializer(serializers.ModelSerializer):
     follower = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Following
-
 
 class EventSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())

@@ -44,7 +44,7 @@ class HybridRouter(routers.DefaultRouter):
             def get(self, request, format=None):
                 ret = {}
                 for key, url_name in api_root_dict.items():
-                    ret[key] = reverse(url_name, request=request, format=format)
+                    ret[key] = reverse.reverse(url_name, request=request, format=format)
                 # In addition to what had been added, now add the APIView urls
                 for api_view_key in api_view_urls.keys():
                     ret[api_view_key] = reverse(api_view_urls[api_view_key].name, request=request, format=format)

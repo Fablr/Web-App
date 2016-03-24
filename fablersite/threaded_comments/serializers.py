@@ -1,15 +1,10 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User, Group
-from threaded_comments.models import Comment, Vote, Comment_Flag
-
-from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
-from django.core.exceptions import *
-
-from podcast.models import *
-from podcast.serializers import *
-
+from django.core.exceptions import ObjectDoesNotExist
 from generic_relations.relations import GenericRelatedField
+
+from podcast.models import Podcast, Episode
+from podcast.serializers import PodcastSerializer, EpisodeSerializer
+from threaded_comments.models import Comment, Vote, Comment_Flag
 
 class VoteSerializer(serializers.ModelSerializer):
     """
@@ -40,7 +35,6 @@ class CommentSerializer(serializers.ModelSerializer):
             if len(parent_comment.path) is not 1:
                 raise serializers.ValidationError("Parent comment already has a parent")
         return value
-
 
 class CommentThreadSerializer(serializers.ModelSerializer):
     """

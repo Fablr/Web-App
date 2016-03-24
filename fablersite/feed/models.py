@@ -8,7 +8,6 @@ from django.utils import timezone
 
 from authentication.models import UserProfile
 
-
 class Following(models.Model):
     follower = models.ForeignKey(User, related_name='follower')
     following = models.ForeignKey(User, related_name='following')
@@ -30,7 +29,6 @@ class Following(models.Model):
             ctype = ContentType.objects.get_for_model(following_profile)
             event = Event.objects.create(user=self.follower, event_type='Followed', content_type=ctype, object_id=following_profile.pk)
 
-
 EVENT_TYPE_CHOICES = (
     ('Listened', 'Listened'),
     ('Subscribed', 'Subscribed'),
@@ -48,4 +46,4 @@ class Event(models.Model):
     info = JSONField(default=dict)
 
     def __str__(self):
-        return '{} @ {} by {} for {}.{}'.format(event_type, posted_time, user, content_type, object_id)
+        return '{} @ {} by {} for {}.{}'.format(self.event_type, self.posted_time, self.user, self.content_type, self.object_id)

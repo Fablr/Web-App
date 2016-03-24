@@ -1,51 +1,39 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
-from django.views import generic
-from django.utils import timezone
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+import django_filters
+from rest_framework.decorators import list_route
+from rest_framework.response import Response
+from rest_framework import permissions, status, viewsets
 
 from podcast.models import Podcast, Publisher, Episode, Subscription, EpisodeReceipt
-from podcast.serializers import *
-from podcast.mixins import *
-
-from authentication.permissions import IsStaffOrTargetUser
-
-import django_filters
-
-from rest_framework.decorators import api_view, list_route
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import authentication, permissions, mixins, generics, status, viewsets
-from rest_framework.reverse import reverse
+from podcast.serializers import PodcastSerializer, PublisherSerializer, EpisodeSerializer, SubscriptionSerializer, EpisodeReceiptSerializer
+from podcast.mixins import CommentMixin
 
 class PublisherFilter(django_filters.FilterSet):
     class Meta:
         model = Publisher
-
 
 class PodcastFilter(django_filters.FilterSet):
     class Meta:
         model = Podcast
         fields = ['publisher']
 
-
 class EpisodeFilter(django_filters.FilterSet):
     class Meta:
         model = Episode
         fields = ['podcast']
 
-
 class SubscriptionFilter(django_filters.FilterSet):
     class Meta:
-        model=Subscription
+        model = Subscription
         fields = ['podcast', 'user']
-
 
 class EpisodeReceiptFilter(django_filters.FilterSet):
     class Meta:
-        model=EpisodeReceipt
+        model = EpisodeReceipt
         fields = ['episode', 'user']
-
 
 class PodcastViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Podcast.objects.all()
@@ -58,12 +46,10 @@ class PodcastViewSet(viewsets.ModelViewSet, CommentMixin):
         serializer = PodcastSerializer(podcasts, many=True, context={'request': self.request})
         return Response(serializer.data)
 
-
 class PublisherViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
     filter_class = PublisherFilter
-
 
 class EpisodeViewSet(viewsets.ModelViewSet, CommentMixin):
     queryset = Episode.objects.all()
@@ -90,7 +76,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         )
 
         if 'user' in self.request.data:
-            user = User.objects.get(id=request.data['user'])
+            user = User.objects.get(id=self.request.data['user'])
         else:
             user = self.request.user
 
@@ -101,9 +87,6 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 
         return obj
 
-    """
-    Create a model instance.
-    """
     def create(self, request, *args, **kwargs):
         assert 'podcast' in request.data, (
             'Missing required field \'podcast\''
@@ -127,7 +110,6 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=op, headers=headers)
         except ObjectDoesNotExist:
             raise Http404
-
 
 class EpisodeReceiptViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)

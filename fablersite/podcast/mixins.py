@@ -1,11 +1,11 @@
 from django.contrib.contenttypes.models import ContentType
-from rest_framework.decorators import detail_route, list_route
-from rest_framework.response import Response
-from threaded_comments.models import Comment
-from threaded_comments.serializers import *
-from rest_framework import authentication, permissions, mixins, generics, viewsets, status
 from django.utils import timezone
-from django.contrib.postgres.fields import ArrayField
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response
+from rest_framework import status
+
+from threaded_comments.models import Comment, Vote
+from threaded_comments.serializers import CommentSerializer, CommentThreadSerializer
 
 class CommentMixin(object):
     """
@@ -15,9 +15,7 @@ class CommentMixin(object):
     @detail_route(methods=['get', 'post'])
     def comments(self, request, pk):
         if self.request.method == 'GET':
-            # Access class name of the class we're serializing (podcast, episode, publisher, etc.)
-            # For some reason, it has to be in lower case to find the ContentType, which is why there's a .lower()
-            ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
+            ctype = ContentType.objects.get_for_model(self.get_serializer().Meta.model)
             comments = Comment.objects.filter(content_type=ctype, object_pk=pk)
             for comment in comments:
                 if comment.is_removed is True:
@@ -27,9 +25,9 @@ class CommentMixin(object):
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif self.request.method == 'POST':
             serializer = CommentSerializer(data=request.data)
-            ctype = ContentType.objects.get_by_natural_key('podcast', self.get_serializer().Meta.model.__name__.lower())
+            ctype = ContentType.objects.get_for_model(self.get_serializer().Meta.model)
             if serializer.is_valid():
-                if('parent' in request.data):
+                if 'parent' in request.data:
                     parent_comment = Comment.objects.get(pk=request.data['parent'], content_type=ctype)
                     comment = serializer.save(user=request.user, user_name=request.user.username, object_pk=pk, content_type=ctype, submit_date=timezone.now(), ip_address=request.META['REMOTE_ADDR'], net_vote=1, path=parent_comment.path)
                     comment.path.append(comment.id)
@@ -44,8 +42,3 @@ class CommentMixin(object):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        # NEED PERMISSIONS HERE
-        # elif self.request.method == 'DELETE':
-        #    comment = Comment.objects.get(pk=pk)
-        #    comment.is_removed = True
-        #    return Response()

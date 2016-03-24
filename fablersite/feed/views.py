@@ -1,13 +1,13 @@
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 import django_filters
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from rest_framework.reverse import reverse
 
 from feed.models import Following, Event
 from feed.serializers import FollowingSerializer, EventSerializer
-
 
 class FollowingFilter(django_filters.FilterSet):
     class Meta:
@@ -42,9 +42,6 @@ class FollowingViewSet(viewsets.ModelViewSet):
 
         return obj
 
-    """
-    Create a model instance.
-    """
     def create(self, request, *args, **kwargs):
         assert 'following' in request.data, (
             'Missing required field `following`'
