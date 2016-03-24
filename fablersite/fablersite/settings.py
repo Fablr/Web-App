@@ -170,7 +170,7 @@ else:
             'HOST': 'aa1rr2xlfemsxmo.cp4q3xdsxtdz.us-west-2.rds.amazonaws.com',
             'PORT': '5432',
         }
-   }
+    }
 
 REST_FRAMEWORK = {
     'PAGINATE_BY': 20,
@@ -225,7 +225,8 @@ else:
 
 
 #REMOVE THIS AFTER UPDATING DJANGO-REGISTRATION-REDUX TO 1.3
-import logging, copy
+import logging
+import copy
 from django.utils.log import DEFAULT_LOGGING
 
 LOGGING = copy.deepcopy(DEFAULT_LOGGING)
