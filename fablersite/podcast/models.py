@@ -8,6 +8,8 @@ from django.contrib.contenttypes.fields import GenericRelation
 from threaded_comments.models import Comment
 from django.utils import timezone
 
+from feed.models import *
+
 
 class Publisher(models.Model):
     """
@@ -79,6 +81,13 @@ class Subscription(models.Model):
 
     class Meta:
         unique_together = ('podcast', 'user',)
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        if self.active:
+            event = Event.objects.get_or_create(user=self.user, event_type='Subscribed', event_object=self.podcast)
+            event.save()
+        super(Episode, self).save(*args, **kwargs)
 
 class EpisodeReceipt(models.Model):
     """
