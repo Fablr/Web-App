@@ -3,8 +3,12 @@ from django.contrib.auth.models import User, Group
 from rest_framework_recursive.fields import RecursiveField
 from feed.models import *
 
-from podcast.models import *
-from podcast.serializers import *
+from podcast.models import Podcast, Episode
+from podcast.serializers import PodcastSerializer, EpisodeSerializer
+from threaded_comments.models import Comment
+from threaded_comments.serializers import CommentViewSerializer
+from authentication.models import UserProfile
+from authentication.serializers import UserProfileSerializer
 
 from generic_relations.relations import GenericRelatedField
 
@@ -23,7 +27,9 @@ class EventSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
     event_object = GenericRelatedField({
         Podcast: PodcastSerializer(),
-        Episode: EpisodeSerializer()
+        Episode: EpisodeSerializer(),
+        Comment: CommentViewSerializer(),
+        UserProfile: UserProfileSerializer(),
     })
 
     class Meta:

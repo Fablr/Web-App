@@ -7,6 +7,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.contenttypes.fields import GenericRelation
 from threaded_comments.models import Comment
 from django.utils import timezone
+from django.db import transaction
+from django.contrib.contenttypes.models import ContentType
 
 from feed.models import *
 
@@ -84,10 +86,11 @@ class Subscription(models.Model):
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        if self.active:
-            event = Event.objects.get_or_create(user=self.user, event_type='Subscribed', event_object=self.podcast)
+        if self.active and not self.pk:
+            ctype = ContentType.objects.get_for_model(self.podcast)
+            event, created = Event.objects.get_or_create(user=self.user, event_type='Subscribed', content_type=ctype, object_id=self.podcast.id)
             event.save()
-        super(Episode, self).save(*args, **kwargs)
+        super(Subscription, self).save(*args, **kwargs)
 
 class EpisodeReceipt(models.Model):
     """

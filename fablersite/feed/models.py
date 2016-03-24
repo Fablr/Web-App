@@ -3,6 +3,9 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
+
+from authentication.models import UserProfile
 
 try:
     from django.contrib.contenttypes.fields import GenericForeignKey
@@ -19,6 +22,17 @@ class Following(models.Model):
     class Meta:
         unique_together = ('follower', 'following')
 
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        log_event = not self.pk
+
+        super(Following, self).save(*args, **kwargs)
+
+        if log_event:
+            following_profile = UserProfile.objects.get(pk=self.following.pk)
+            ctype = ContentType.objects.get_for_model(following_profile)
+            event = Event.objects.create(user=self.follower, event_type='Followed', content_type=ctype, object_id=following_profile.pk)
+
 EVENT_TYPE_CHOICES = (
     ('Listened', 'Listened'),
     ('Subscribed', 'Subscribed'),
@@ -33,7 +47,7 @@ class Event(models.Model):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     event_object = GenericForeignKey('content_type', 'object_id')
-    info = JSONField()
+    info = JSONField(default=dict)
 
     def __str__(self):
         return '{} @ {} by {} for {}.{}'.format(event_type, posted_time, user, content_type, object_id)

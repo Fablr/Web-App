@@ -6,6 +6,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.exceptions import *
 
+from podcast.models import *
+from podcast.serializers import *
+
+from generic_relations.relations import GenericRelatedField
+
 class VoteSerializer(serializers.ModelSerializer):
     """
     Vote serializer
@@ -67,8 +72,18 @@ class CommentViewSerializer(serializers.ModelSerializer):
     """
     Strictly for the API html view, returns all data about a Comment
     """
+    content_object = GenericRelatedField({
+        Podcast: PodcastSerializer(),
+        Episode: EpisodeSerializer()
+    })
+    content_type = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
+        fields = ('id', 'content_type', 'content_object', 'user_name', 'comment', 'submit_date', 'edited_date', 'net_vote', 'user')
+
+    def get_content_type(self, obj):
+        return obj.content_type.model
 
 class CommentFlagSerializer(serializers.ModelSerializer):
     class Meta:

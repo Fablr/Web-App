@@ -13,6 +13,8 @@ from django.db import transaction
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
+from feed.models import Event
+
 COMMENT_MAX_LENGTH = getattr(settings, 'COMMENT_MAX_LENGTH', 10000)
 
 class Comment(models.Model):
@@ -43,15 +45,22 @@ class Comment(models.Model):
                                      help_text=_('Check this box if the comment is inappropriate. '
                                                  'A "This comment has been removed" message will '
                                                  'be displayed instead.'))
-    path = ArrayField(models.PositiveIntegerField(), editable=False, blank=True, null=False, size=2)  
+    path = ArrayField(models.PositiveIntegerField(), editable=False, blank=True, null=False, size=2)
     #path = models.PositiveIntegerField(blank=True, null=False, default=0)
     net_vote = models.IntegerField(blank=False, null=False)
 
-    @transaction.atomic 
+    @transaction.atomic
     def save(self, *args, **kwargs):
         if self.submit_date is None:
             self.submit_date = timezone.now()
+
+        log_event = not self.pk
+
         super(Comment, self).save(*args, **kwargs)
+
+        if log_event:
+            ctype = ContentType.objects.get_for_model(self)
+            event = Event.objects.create(user=self.user, event_type='Commmented', content_type=ctype, object_id=self.pk)
 
     def __str__(self):
         return str(self.pk)
