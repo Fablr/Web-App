@@ -3,7 +3,7 @@ from django.contrib import admin
 from rest_framework import routers, views, reverse, response
 
 from authentication.views import UserViewSet, GroupViewSet, UserProfileViewSet, register_by_access_token
-from feed.views import EventViewSet, FollowingViewSet
+from feed.views import FollowingViewSet, EventViewSet, FeedViewSet
 from podcast.views import PodcastViewSet, EpisodeViewSet, PublisherViewSet, SubscriptionViewSet, EpisodeReceiptViewSet
 from threaded_comments.views import CommentFlagViewSet, CommentViewSet, VoteViewSet
 
@@ -53,19 +53,20 @@ class HybridRouter(routers.DefaultRouter):
         return APIRoot.as_view()
 
 router = HybridRouter()
-router.register(r'users', UserViewSet)
-router.register(r'groups', GroupViewSet)
-router.register(r'userprofile', UserProfileViewSet)
-router.register(r'podcast', PodcastViewSet)
-router.register(r'episode', EpisodeViewSet)
-router.register(r'publisher', PublisherViewSet)
-router.register(r'commentflag', CommentFlagViewSet)
-router.register(r'subscription', SubscriptionViewSet)
-router.register(r'comment', CommentViewSet)
-router.register(r'vote', VoteViewSet)
-router.register(r'episodereceipt', EpisodeReceiptViewSet)
-router.register(r'following', FollowingViewSet)
-router.register(r'event', EventViewSet)
+router.register('users', UserViewSet)
+router.register('groups', GroupViewSet)
+router.register('userprofile', UserProfileViewSet)
+router.register('podcast', PodcastViewSet)
+router.register('episode', EpisodeViewSet)
+router.register('publisher', PublisherViewSet)
+router.register('commentflag', CommentFlagViewSet)
+router.register('subscription', SubscriptionViewSet)
+router.register('comment', CommentViewSet)
+router.register('vote', VoteViewSet)
+router.register('episodereceipt', EpisodeReceiptViewSet)
+router.register('following', FollowingViewSet)
+router.register('event', EventViewSet, 'event')
+router.register('feed', FeedViewSet, 'feed')
 
 urlpatterns = patterns(
     '',

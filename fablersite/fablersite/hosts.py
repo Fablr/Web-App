@@ -3,6 +3,6 @@ from django.conf import settings
 
 host_patterns = patterns(
     '',
-    host(r'www', settings.ROOT_URLCONF, name='www'),
-    host(r'(?!www)\w+', 'fablersite.urls', name='site'),
+    host('www', settings.ROOT_URLCONF, name='www'),
+    host('(?!www)\w+', 'fablersite.urls', name='site'),
 )

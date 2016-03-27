@@ -4,10 +4,11 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 import django_filters
 from rest_framework.response import Response
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, mixins
 
+from authentication.models import User
 from feed.models import Following, Event
-from feed.serializers import FollowingSerializer, EventSerializer
+from feed.serializers import FollowingSerializer, EventSerializer, FeedSerializer
 
 class FollowingFilter(django_filters.FilterSet):
     class Meta:
@@ -66,3 +67,31 @@ class FollowingViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+
+class FeedViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Event.objects.all()
+    serializer_class = FeedSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        assert self.lookup_field in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, self.lookup_field)
+        )
+
+        filter_kwargs = {self.lookup_field: self.kwargs[self.lookup_field]}
+        user = get_object_or_404(User.objects.all(), **filter_kwargs)
+
+        following = Following.objects.filter(follower=user).values_list('following', flat=True)
+        queryset = queryset.filter(user__in=following)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
