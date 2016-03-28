@@ -30,7 +30,7 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'posted_time', 'event_type', 'event_object', 'info')
 
 class FeedSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
+    user = serializers.SerializerMethodField()
     event_object = GenericRelatedField({
         Podcast: PodcastSerializer(),
         Episode: EpisodeSerializer(),
@@ -38,6 +38,12 @@ class FeedSerializer(serializers.ModelSerializer):
         UserProfile: UserProfileSerializer(),
     })
 
+    def get_user(self, event):
+        user_profile = UserProfile.objects.get(pk=event.user.pk)
+        request = self.context.get('request', None)
+        profile_serializer = UserProfileSerializer(user_profile, context={'request': request})
+        return profile_serializer.data
+
     class Meta:
         model = Event
-        fields = ('user', 'posted_time', 'event_type', 'event_object', 'info')
+        fields = ('id', 'user', 'posted_time', 'event_type', 'event_object', 'info')
