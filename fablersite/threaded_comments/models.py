@@ -53,7 +53,7 @@ class Comment(models.Model):
 
         if log_event:
             ctype = ContentType.objects.get_for_model(self)
-            event = Event.objects.create(user=self.user, event_type='Commmented', content_type=ctype, object_id=self.pk)
+            event = Event.objects.create(user=self.user, event_type='Commented', content_type=ctype, object_id=self.pk)
 
     def __str__(self):
         return str(self.pk)
